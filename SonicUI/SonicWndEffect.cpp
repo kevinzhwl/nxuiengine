@@ -875,7 +875,7 @@ LRESULT CSonicWndEffect::ChildProc(HWND hWnd, UINT message, WPARAM wParam, LPARA
 	return CallWindowProc(pOld, hWnd, message, wParam, lParam);
 }
 
-HWND CSonicWndEffect::CreateChildCtrl(LPCSTR lpszClassName, LPCSTR lpszText, DWORD dwStyle, int x, int y, int cx, int cy, int nAttach /* = -1 */)
+HWND CSonicWndEffect::CreateChildCtrl(LPCTSTR lpszClassName, LPCTSTR lpszText, DWORD dwStyle, int x, int y, int cx, int cy, int nAttach /* = -1 */)
 {
 	if(IsValid() == FALSE)
 	{

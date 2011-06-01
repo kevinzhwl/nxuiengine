@@ -122,7 +122,7 @@ public:
 	virtual BOOL EnableWholeDrag(BOOL b);
 	virtual BOOL EnableGray(BOOL b);
 	virtual BOOL EnableHSLAdjust(BOOL b, int h = -1, int s = -1, int l = -1);
-	virtual HWND CreateChildCtrl(LPCSTR lpszClassName, LPCSTR lpszText, DWORD dwStyle, int x, int y, int cx, int cy, int nAttach = -1);
+	virtual HWND CreateChildCtrl(LPCTSTR lpszClassName, LPCTSTR lpszText, DWORD dwStyle, int x, int y, int cx, int cy, int nAttach = -1);
 	virtual BOOL EnableFrame(BOOL b, BYTE bSideMask = 0xf, BYTE bType = 0, int nSpace = 0, int nAlphaSpeed = 10, 
 		ISonicImage * pSide = NULL, ISonicImage * pCorner = NULL);
 	virtual BOOL SetBkColor(DWORD dwColor);

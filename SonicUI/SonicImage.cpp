@@ -30,7 +30,7 @@ BOOL CSonicImage::Load(LPCTSTR lpszFileName)
 	HGLOBAL hGlobal;
 	DWORD dwSize;
 
-	FILE *fp = fopen(lpszFileName, "rb");
+	FILE *fp = _tfopen(lpszFileName, _T("rb"));
 	if(fp == NULL)
 	{
 		return FALSE;
@@ -63,7 +63,7 @@ BOOL CSonicImage::Load(LPCTSTR lpszFileName)
 	return bRetValue;
 }
 
-BOOL CSonicImage::Load(UINT nResId, HMODULE hResModule /* = NULL */, LPCSTR szResourceType /* = NULL */)
+BOOL CSonicImage::Load(UINT nResId, HMODULE hResModule /* = NULL */, LPCTSTR szResourceType /* = NULL */)
 {
 	Clear();
 	HRSRC hPicture;
@@ -419,7 +419,7 @@ BOOL CSonicImage::SaveAsFile(LPCTSTR lpszFileName, enImageType imgType, int nQua
 	}
 	CString strPath = lpszFileName;
 	int nFind1 = strPath.ReverseFind('\\');
-	int nFind2 = strPath.ReverseFind('/');
+	int nFind2 = strPath.ReverseFind(_T('/'));
 	int nFind = max(nFind1, nFind2);
 	if(nFind != -1)
 	{

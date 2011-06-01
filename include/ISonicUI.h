@@ -261,7 +261,7 @@ namespace sonic_ui
 		// nResId:			resource id
 		// hResModule:		module contain resource
 		// szResourceType:	resource type name, default as "IMAGE"
-		virtual BOOL Load(UINT nResId, HMODULE hResModule = NULL, LPCSTR szResourceType = NULL) = 0;
+		virtual BOOL Load(UINT nResId, HMODULE hResModule = NULL, LPCTSTR szResourceType = NULL) = 0;
 
 		// load from hdc
 		// bAlphaChannel:	image will add alpha channel if this param is set 
@@ -496,7 +496,7 @@ namespace sonic_ui
 		virtual BOOL EnableGray(BOOL b) = 0;
 
 		// create a fake child window
-		virtual HWND CreateChildCtrl(LPCSTR lpszClassName, LPCSTR lpszText, DWORD dwStyle, int x, int y, int cx, int cy, int nAttach = -1) = 0;
+		virtual HWND CreateChildCtrl(LPCTSTR lpszClassName, LPCTSTR lpszText, DWORD dwStyle, int x, int y, int cx, int cy, int nAttach = -1) = 0;
 
 		// convert a normal child window into a fake one.
 		virtual BOOL ConvertChildCtrl(HWND hChild, int nAttach = -1) = 0;
@@ -633,7 +633,7 @@ namespace sonic_ui
 	{
 	public:		
 		// format like the CString
-		virtual BOOL Format(LPCSTR lpszArg, ...) = 0;
+		virtual BOOL Format(LPCTSTR lpszArg, ...) = 0;
 
 		// render the text, please remember to specify a hWnd if the hdc is a memory one
 		virtual BOOL TextOut(HDC hdc, int x, int y, HWND hWnd = NULL, RECT * pMemDCRect = NULL) = 0;
@@ -654,7 +654,7 @@ namespace sonic_ui
 		virtual BOOL Detach() = 0;
 
 		// get raw string
-		virtual LPCSTR GetStr() = 0;
+		virtual LPCTSTR GetStr() = 0;
 
 		// show or hide string
 		virtual void ShowString(BOOL bShow = TRUE, BOOL bRedraw = TRUE) = 0;
@@ -746,7 +746,7 @@ namespace sonic_ui
 		virtual ISonicWndEffect * EffectFromHwnd(HWND hWnd) = 0;
 
 		// handle raw strings to avoid keywords confict
-		virtual LPCSTR HandleRawString(LPCSTR lpszStr, int nType, LPCSTR lpszUrlAttr = NULL) = 0;
+		virtual LPCTSTR HandleRawString(LPCTSTR lpszStr, int nType, LPCTSTR lpszUrlAttr = NULL) = 0;
 
 		// create a ISonicPaint
 		virtual ISonicPaint * CreatePaint() = 0;

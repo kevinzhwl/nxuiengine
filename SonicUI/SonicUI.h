@@ -74,11 +74,11 @@ public:
 	virtual BOOL Detach(ISonicBase * pBase);
 	virtual void DestroyAllObject();
 	virtual BOOL IsUpdateLayeredWindow(HWND hWnd);
-	virtual BOOL SetTipText(LPCSTR lpszText, HWND hWnd, RECT &rt, ISonicBase * pBase);
+	virtual BOOL SetTipText(LPCTSTR lpszText, HWND hWnd, RECT &rt, ISonicBase * pBase);
 	virtual BOOL ClearTip(ISonicBase * pBase);
 	virtual BOOL CreateTip();
 	virtual ISonicWndEffect * EffectFromHwnd(HWND hWnd);
-	virtual LPCSTR HandleRawString(LPCSTR lpszStr, int nType, LPCSTR lpszUrlAttr = NULL);
+	virtual LPCTSTR HandleRawString(LPCTSTR lpszStr, int nType, LPCTSTR lpszUrlAttr = NULL);
 
 	BOOL RectInRect(LPRECT pRect1, LPRECT pRect2);
 	BOOL IsCursorInWnd(HWND hWnd);

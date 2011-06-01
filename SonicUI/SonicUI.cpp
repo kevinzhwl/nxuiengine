@@ -505,7 +505,7 @@ BOOL CSonicUI::IsUpdateLayeredWindow(HWND hWnd)
 	return TRUE;
 }
 
-BOOL CSonicUI::SetTipText(LPCSTR lpszText, HWND hWnd, RECT &rt, ISonicBase * pBase)
+BOOL CSonicUI::SetTipText(LPCTSTR lpszText, HWND hWnd, RECT &rt, ISonicBase * pBase)
 {
 	if(IsValidObject(pBase) == FALSE)
 	{
@@ -538,7 +538,7 @@ BOOL CSonicUI::CreateTip()
 	return m_Tooltip.Create(m_hWnd);
 }
 
-LPCSTR CSonicUI::HandleRawString(LPCSTR lpszStr, int nType, LPCSTR lpszUrlAttr /* = NULL */)
+LPCTSTR CSonicUI::HandleRawString(LPCTSTR lpszStr, int nType, LPCTSTR lpszUrlAttr /* = NULL */)
 {
 	static CString strRet;
 	strRet = lpszStr;
@@ -548,42 +548,42 @@ LPCSTR CSonicUI::HandleRawString(LPCSTR lpszStr, int nType, LPCSTR lpszUrlAttr /
 	{
 		if(strRet.GetAt(i) == 0)
 		{
-			strRet.SetAt(i, '/');
-			strRet.Insert(i + 1, "def/");
+			strRet.SetAt(i, _T('/'));
+			strRet.Insert(i + 1, _T("def/"));
 			i += 4;
 			nEnd = 0;
 			continue;
 		}
-		if(strRet.GetAt(i) == '/')
+		if(strRet.GetAt(i) == _T('/'))
 		{
 			if(nType & RSCT_DOUBLE)
 			{
-				strRet.Insert(i, '/');
+				strRet.Insert(i, _T('/'));
 				i++;
 			}
 			if(nType & RSCT_REVERSE)
 			{
-				strRet.SetAt(i, '\\');
+				strRet.SetAt(i, _T('\\'));
 			}
 		}
-		else if((nType & RSCT_URL) && !nEnd && (strRet.GetAt(i) == 'h' || strRet.GetAt(i) == 'w'))
+		else if((nType & RSCT_URL) && !nEnd && (strRet.GetAt(i) == _T('h') || strRet.GetAt(i) == _T('w')))
 		{
 			int nStart = -1;
 			int nUrlHead = 0;
-			if(strRet.GetAt(i) == 'h')
+			if(strRet.GetAt(i) == _T('h'))
 			{
 				nUrlHead = 5;
 				strUrl = strRet.Mid(i, nUrlHead);
-				if(strUrl.CompareNoCase("http:") == 0)
+				if(strUrl.CompareNoCase(_T("http:")) == 0)
 				{
 					nStart = i;
 				}
 			}
-			if(strRet.GetAt(i) == 'w')
+			if(strRet.GetAt(i) == _T('w'))
 			{
 				nUrlHead = 4;
 				strUrl = strRet.Mid(i, nUrlHead);
-				if(strUrl.CompareNoCase("www.") == 0)
+				if(strUrl.CompareNoCase(_T("www.")) == 0)
 				{
 					nStart = i;
 				}
@@ -593,23 +593,23 @@ LPCSTR CSonicUI::HandleRawString(LPCSTR lpszStr, int nType, LPCSTR lpszUrlAttr /
 				nEnd = strRet.GetLength();
 				for(int j = nStart; j < strRet.GetLength(); j++)
 				{
-					char c = strRet.GetAt(j);
-					if(c <= 13 || c == ',' || c == ' ' || c == ';' || c == '@')
+					TCHAR c = strRet.GetAt(j);
+					if(c <= 13 || c == _T(',') || c == _T(' ') || c == _T(';') || c == _T('@'))
 					{
 						nEnd = j;
 						break;
 					}
 				}
 				strUrl = strRet.Mid(nStart, nEnd - nStart);
-				strRet.Insert(nEnd, '\0');
+				strRet.Insert(nEnd, _T('\0'));
 				CString strInsert;
-				strInsert.Format("/a='%s'", strUrl);
+				strInsert.Format(_T("/a='%s'"), strUrl);
 				if(lpszUrlAttr)
 				{
-					strInsert += ", ";
+					strInsert += _T(", ");
 					strInsert += lpszUrlAttr;
 				}
-				strInsert += "/";
+				strInsert += _T("/");
 				strRet.Insert(nStart, strInsert);
 				i += strInsert.GetLength() - 1 + nUrlHead;
 				continue;
@@ -649,7 +649,7 @@ BOOL CSonicUI::Init()
 	{
 		return FALSE;
 	}
-	HMODULE hMod = GetModuleHandle("User32.dll");
+	HMODULE hMod = GetModuleHandle(_T("User32.dll"));
 	if(hMod == NULL)
 	{
 		return FALSE;

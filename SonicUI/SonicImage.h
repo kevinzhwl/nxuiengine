@@ -12,7 +12,7 @@ public:
 	CSonicImage(void);
 	~CSonicImage(void);
 	virtual BOOL Load(LPCTSTR lpszFileName);
-	virtual BOOL Load(UINT nResId, HMODULE hResModule = NULL, LPCSTR szResourceType = NULL);
+	virtual BOOL Load(UINT nResId, HMODULE hResModule = NULL, LPCTSTR szResourceType = NULL);
 	virtual BOOL Load(HDC hdc, int x, int y, int cx, int cy, BOOL bAlphaChannel = FALSE);
 	virtual BOOL Draw(HDC hdc, int x = 0, int y = 0, DRAW_PARAM * pDp = NULL);
 	virtual BOOL SetBitsToDevice(HDC hdc, int x = 0, int y = 0);

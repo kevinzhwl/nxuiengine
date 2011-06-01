@@ -199,29 +199,29 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    {
 	   g_pTest[i] = GetSonicUI()->CreateString();
    }
-   g_pTest[0]->Format("/c=%x/测试字样1", RGB(255, 0, 0));
+   g_pTest[0]->Format(_T("/c=%x/测试字样1"), RGB(255, 0, 0));
 
-   g_pTest[1]->Format("/c=%x, a='http://hi.csdn.net/zskof'/点我打开链接", RGB(0, 0, 255));
+   g_pTest[1]->Format(_T("/c=%x, a='http://hi.csdn.net/zskof'/点我打开链接"), RGB(0, 0, 255));
 
-   g_pTest[2]->Format("/c=%x, a='http://hi.csdn.net/zskof', linkl=1, linkc=0, linkt='点击'/点我打开链接1", RGB(255, 0, 255));
+   g_pTest[2]->Format(_T("/c=%x, a='http://hi.csdn.net/zskof', linkl=1, linkc=0, linkt='点击'/点我打开链接1"), RGB(255, 0, 255));
 
-   g_pTest[3]->Format("/c=%x, a='http://hi.csdn.net/zskof', linkl=2, font, font_height=14, font_bold=1, font_italic=1/点我打开链接2", RGB(255, 0, 255));
+   g_pTest[3]->Format(_T("/c=%x, a='http://hi.csdn.net/zskof', linkl=2, font, font_height=14, font_bold=1, font_italic=1/点我打开链接2"), RGB(255, 0, 255));
 
-   g_pTest[4]->Format("/sparkle, sparkle_color=%x|%x|%x/闪烁特殊", RGB(255, 0, 0), RGB(255, 255, 0), RGB(0, 255, 0));
+   g_pTest[4]->Format(_T("/sparkle, sparkle_color=%x|%x|%x/闪烁特殊"), RGB(255, 0, 0), RGB(255, 255, 0), RGB(0, 255, 0));
 
-   g_pTest[5]->Format("/fadeout, fadeout_min=0/渐隐渐现/p=%d/", pImgClick->GetObjectId());
+   g_pTest[5]->Format(_T("/fadeout, fadeout_min=0/渐隐渐现/p=%d/"), pImgClick->GetObjectId());
 
-   g_pTest[6]->Format("/c=%x, line_width=100/我们都有一个家，名字叫中国，兄弟姐妹都很多，景色也不错", RGB(0, 255, 0));
+   g_pTest[6]->Format(_T("/c=%x, line_width=100/我们都有一个家，名字叫中国，兄弟姐妹都很多，景色也不错"), RGB(0, 255, 0));
 
-   g_pTest[7]->Format("/c=%x, line_width=100, single_line=2/我们都有一个家，名字叫中国，兄弟姐妹都很多，景色也不错", RGB(0, 0, 0));
+   g_pTest[7]->Format(_T("/c=%x, line_width=100, single_line=2/我们都有一个家，名字叫中国，兄弟姐妹都很多，景色也不错"), RGB(0, 0, 0));
 
-   g_pTest[8]->Format("/a, c=%x, linkl=2/点我关闭程序", RGB(255, 0, 255));
-   g_pTest[8]->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnClose);
+   g_pTest[8]->Format(_T("/a, c=%x, linkl=2/点我关闭程序"), RGB(255, 0, 255));
+   g_pTest[8]->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, &OnClose);
 
-   g_pTest[9]->Format("/a, p=%d, ph=%d, pc=%d, linkt='点我移动'/", pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
+   g_pTest[9]->Format(_T("/a, p=%d, ph=%d, pc=%d, linkt='点我移动'/"), pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
    g_pTest[9]->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnMove);
 
-   g_pTest[10]->Format("/a, p=%d, ph=%d, pc=%d, linkt='点我动画关闭', animation=40/", pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
+   g_pTest[10]->Format(_T("/a, p=%d, ph=%d, pc=%d, linkt='点我动画关闭', animation=40/"), pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
    g_pTest[10]->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnAniClose);
 
    g_pEffect = GetSonicUI()->CreateWndEffect();
@@ -229,7 +229,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    g_pEffect->Delegate(DELEGATE_EVENT_TRANSFORM_OVER, NULL, NULL, OnClose);
 
    ISonicString * pDemo1 = GetSonicUI()->CreateString();
-   pDemo1->Format("/a/大家好我是滚动字幕/p=%d/", pImgCard->GetObjectId());
+   pDemo1->Format(_T("/a/大家好我是滚动字幕/p=%d/"), pImgCard->GetObjectId());
    ISonicTextScrollBar * pScroll  = GetSonicUI()->CreateTextScrollBar();
    pScroll->Create(hWnd, 300, 10, 150, 60, TRUE, 40);
    pScroll->AddText(pDemo1->GetObjectId());
@@ -237,7 +237,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    pScroll->DoScroll();
 
    ISonicString * pDemo2 = GetSonicUI()->CreateString();
-   pDemo2->Format("/a, p=%d, ph=%d, pc=%d, linkt='点我试试动画效果'/", pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
+   pDemo2->Format(_T("/a, p=%d, ph=%d, pc=%d, linkt='点我试试动画效果'/"), pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
    pDemo2->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnAni);
    g_pAni = GetSonicUI()->CreateAnimation();
    g_pAni->Create(hWnd, 300, 200, pDemo2->GetWidth(), pDemo2->GetHeight());
@@ -245,14 +245,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    g_pAni->AddObject(pDemo2->GetObjectId());
 
    ISonicString * pGif = GetSonicUI()->CreateString();
-   pGif->Format("/p=%d/", pImgGif->GetObjectId());
+   pGif->Format(_T("/p=%d/"), pImgGif->GetObjectId());
    g_pMoveImg = GetSonicUI()->CreateAnimation();
    g_pMoveImg->Create(hWnd, 100, 200, pGif->GetWidth(), pGif->GetHeight());
    g_pMoveImg->Delegate(DELEGATE_EVENT_MOUSEENTER, NULL, NULL, OnMouseEnter);
    g_pMoveImg->AddObject(pGif->GetObjectId());
 
    ISonicString * pStrTrans = GetSonicUI()->CreateString();
-   pStrTrans->Format("/c=0xff0000, fadeout, init_normal/Do me a favor");
+   pStrTrans->Format(_T("/c=0xff0000, fadeout, init_normal/Do me a favor"));
    ISonicPaint * pPaint = GetSonicUI()->CreatePaint();
    pPaint->Create(FALSE);
    pPaint->AddObject(pStrTrans->GetObjectId());
@@ -357,10 +357,10 @@ LRESULT CALLBACK About(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 		{
 			about.pContactMe = GetSonicUI()->CreateString();
-			about.pContactMe->Format("/global, c=0xffffff, line_space=3/CopyRight(C) 2008 Sonic Guan\nQQ:20346020\n/a='mailto:zs_kof@163.com', linkl=2, c=0xffffff/mailto:zs_kof@163.com");
+			about.pContactMe->Format(_T("/global, c=0xffffff, line_space=3/CopyRight(C) 2008 Sonic Guan\nQQ:20346020\n/a='mailto:zs_kof@163.com', linkl=2, c=0xffffff/mailto:zs_kof@163.com"));
 
 			about.pClose = GetSonicUI()->CreateString();
-			about.pClose->Format("/a, linkl=2, c=%x, linkh=%x/Close", RGB(255, 255, 255), RGB(128, 128, 128));
+			about.pClose->Format(_T("/a, linkl=2, c=%x, linkh=%x/Close"), RGB(255, 255, 255), RGB(128, 128, 128));
 			about.pClose->Delegate(DELEGATE_EVENT_CLICK, NULL, &about, &CAboutUI::OnClose);
 
 			ISonicImage * pImg = GetSonicUI()->CreateImage();

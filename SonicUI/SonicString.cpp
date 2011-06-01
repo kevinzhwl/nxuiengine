@@ -72,53 +72,53 @@ BOOL CSonicString::Init()
 	logFont.lfHeight = -12;
 	logFont.lfWeight = FW_NORMAL;
 	logFont.lfQuality = DRAFT_QUALITY;
-	lstrcpy(logFont.lfFaceName, "ËÎÌו");
+	lstrcpy(logFont.lfFaceName, _T("ËÎÌו"));
 	m_hFont = CreateFontIndirect(&logFont);
 	if(m_hFont == NULL)
 	{
 		return FALSE;
 	}
 
-	m_mapFunc["a"] = &CSonicString::Ctrl_a;
-	m_mapFunc["def"] = &CSonicString::Ctrl_def;
-	m_mapFunc["c"] = &CSonicString::Ctrl_c;
-	m_mapFunc["linkl"] = &CSonicString::Ctrl_linkl;
-	m_mapFunc["linkt"] = &CSonicString::Ctrl_linkt;
-	m_mapFunc["linkc"] = &CSonicString::Ctrl_linkc;
-	m_mapFunc["linkh"] = &CSonicString::Ctrl_linkh;
-	m_mapFunc["p"] = &CSonicString::Ctrl_p;
-	m_mapFunc["ph"] = &CSonicString::Ctrl_ph;
-	m_mapFunc["pc"] = &CSonicString::Ctrl_pc;
-	m_mapFunc["key"] = &CSonicString::Ctrl_key;
-	m_mapFunc["btn_type"] = &CSonicString::Ctrl_btn_type;
-	m_mapFunc["pClip"] = &CSonicString::Ctrl_pClip;
-	m_mapFunc["line_width"] = &CSonicString::Ctrl_line_width;
-	m_mapFunc["single_line"] = &CSonicString::Ctrl_single_line;
-	m_mapFunc["align"] = &CSonicString::Ctrl_align;
-	m_mapFunc["animation"] = &CSonicString::Ctrl_animation;
-	m_mapFunc["br_offset"] = &CSonicString::Ctrl_br_offset;
-	m_mapFunc["font"] = &CSonicString::Ctrl_font;
-	m_mapFunc["font_height"] = &CSonicString::Ctrl_font_height;
-	m_mapFunc["font_bold"] = &CSonicString::Ctrl_font_bold;
-	m_mapFunc["font_italic"] = &CSonicString::Ctrl_font_italic;
-	m_mapFunc["font_strikeout"] = &CSonicString::Ctrl_font_strikeout;
-	m_mapFunc["font_face"] = &CSonicString::Ctrl_font_face;
-	m_mapFunc["sparkle"] = &CSonicString::Ctrl_sparkle;
-	m_mapFunc["sparkle_color"] = &CSonicString::Ctrl_sparkle_color;
-	m_mapFunc["sparkle_interval"] = &CSonicString::Ctrl_sparkle_interval;
-	m_mapFunc["sparkle_timeout"] = &CSonicString::Ctrl_sparkle_timeout;
-	m_mapFunc["fadeout"] = &CSonicString::Ctrl_fadeout;
-	m_mapFunc["fadeout_max"] = &CSonicString::Ctrl_fadeout_max;
-	m_mapFunc["fadeout_min"] = &CSonicString::Ctrl_fadeout_min;
-	m_mapFunc["fadeout_speed"] = &CSonicString::Ctrl_fadeout_speed;
-	m_mapFunc["line_space"] = &CSonicString::Ctrl_line_space;
-	m_mapFunc["global"] = &CSonicString::Ctrl_global;
-	m_mapFunc["pass_msg"] = &CSonicString::Ctrl_pass_msg;
-	m_mapFunc["ani_num"] = &CSonicString::Ctrl_ani_num;
-	m_mapFunc["ani_num_from"] = &CSonicString::Ctrl_ani_num_from;
-	m_mapFunc["ani_num_to"] = &CSonicString::Ctrl_ani_num_to;
-	m_mapFunc["ani_num_frame"] = &CSonicString::Ctrl_ani_num_frame;
-	m_mapFunc["init_normal"] = &CSonicString::Ctrl_init_normal;
+	m_mapFunc[_T("a")] = &CSonicString::Ctrl_a;
+	m_mapFunc[_T("def")] = &CSonicString::Ctrl_def;
+	m_mapFunc[_T("c")] = &CSonicString::Ctrl_c;
+	m_mapFunc[_T("linkl")] = &CSonicString::Ctrl_linkl;
+	m_mapFunc[_T("linkt")] = &CSonicString::Ctrl_linkt;
+	m_mapFunc[_T("linkc")] = &CSonicString::Ctrl_linkc;
+	m_mapFunc[_T("linkh")] = &CSonicString::Ctrl_linkh;
+	m_mapFunc[_T("p")] = &CSonicString::Ctrl_p;
+	m_mapFunc[_T("ph")] = &CSonicString::Ctrl_ph;
+	m_mapFunc[_T("pc")] = &CSonicString::Ctrl_pc;
+	m_mapFunc[_T("key")] = &CSonicString::Ctrl_key;
+	m_mapFunc[_T("btn_type")] = &CSonicString::Ctrl_btn_type;
+	m_mapFunc[_T("pClip")] = &CSonicString::Ctrl_pClip;
+	m_mapFunc[_T("line_width")] = &CSonicString::Ctrl_line_width;
+	m_mapFunc[_T("single_line")] = &CSonicString::Ctrl_single_line;
+	m_mapFunc[_T("align")] = &CSonicString::Ctrl_align;
+	m_mapFunc[_T("animation")] = &CSonicString::Ctrl_animation;
+	m_mapFunc[_T("br_offset")] = &CSonicString::Ctrl_br_offset;
+	m_mapFunc[_T("font")] = &CSonicString::Ctrl_font;
+	m_mapFunc[_T("font_height")] = &CSonicString::Ctrl_font_height;
+	m_mapFunc[_T("font_bold")] = &CSonicString::Ctrl_font_bold;
+	m_mapFunc[_T("font_italic")] = &CSonicString::Ctrl_font_italic;
+	m_mapFunc[_T("font_strikeout")] = &CSonicString::Ctrl_font_strikeout;
+	m_mapFunc[_T("font_face")] = &CSonicString::Ctrl_font_face;
+	m_mapFunc[_T("sparkle")] = &CSonicString::Ctrl_sparkle;
+	m_mapFunc[_T("sparkle_color")] = &CSonicString::Ctrl_sparkle_color;
+	m_mapFunc[_T("sparkle_interval")] = &CSonicString::Ctrl_sparkle_interval;
+	m_mapFunc[_T("sparkle_timeout")] = &CSonicString::Ctrl_sparkle_timeout;
+	m_mapFunc[_T("fadeout")] = &CSonicString::Ctrl_fadeout;
+	m_mapFunc[_T("fadeout_max")] = &CSonicString::Ctrl_fadeout_max;
+	m_mapFunc[_T("fadeout_min")] = &CSonicString::Ctrl_fadeout_min;
+	m_mapFunc[_T("fadeout_speed")] = &CSonicString::Ctrl_fadeout_speed;
+	m_mapFunc[_T("line_space")] = &CSonicString::Ctrl_line_space;
+	m_mapFunc[_T("global")] = &CSonicString::Ctrl_global;
+	m_mapFunc[_T("pass_msg")] = &CSonicString::Ctrl_pass_msg;
+	m_mapFunc[_T("ani_num")] = &CSonicString::Ctrl_ani_num;
+	m_mapFunc[_T("ani_num_from")] = &CSonicString::Ctrl_ani_num_from;
+	m_mapFunc[_T("ani_num_to")] = &CSonicString::Ctrl_ani_num_to;
+	m_mapFunc[_T("ani_num_frame")] = &CSonicString::Ctrl_ani_num_frame;
+	m_mapFunc[_T("init_normal")] = &CSonicString::Ctrl_init_normal;
 	return TRUE;
 }
 
@@ -127,12 +127,12 @@ HFONT CSonicString::GetDefSonicFont()
 	return m_hFont;
 }
 
-BOOL CSonicString::Format(LPCSTR lpszArg, ...)
+BOOL CSonicString::Format(LPCTSTR lpszArg, ...)
 {
-	char message[1024];
+	TCHAR message[1024];
 	va_list argList;
 	va_start(argList, lpszArg);
-	_vsnprintf(message, sizeof(message), lpszArg, argList);
+	_vsntprintf(message, sizeof(message), lpszArg, argList);
 	va_end(argList);
 
 	Clear();
@@ -155,7 +155,7 @@ BOOL CSonicString::Translate()
 		{
 			STRING_BLOCK block;
 			block.nLine = nCurrentLine;
-			if(strStuff.GetAt(0) != '/')
+			if(strStuff.GetAt(0) != _T('/'))
 			{
 				strStuff = "/def/" + strStuff;
 			}
@@ -164,7 +164,7 @@ BOOL CSonicString::Translate()
 			int nFind = -1;
 			for(int i = 1; i < strStuff.GetLength(); i++)
 			{
-				if(strStuff.GetAt(i) == '/')
+				if(strStuff.GetAt(i) == _T('/'))
 				{
 					nFind = i;
 					break;
@@ -223,7 +223,7 @@ BOOL CSonicString::Translate()
 				nFind = strOne.Find('=');
 				if(nFind > 0)
 				{
-					MAP_STR_TO_FUNC::iterator it = m_mapFunc.find((LPCSTR)strOne.Left(nFind));
+					MAP_STR_TO_FUNC::iterator it = m_mapFunc.find((LPCTSTR)strOne.Left(nFind));
 					if(it != m_mapFunc.end())
 					{
 						(this->*(it->second))(strOne.Mid(nFind + 1), block);
@@ -235,7 +235,7 @@ BOOL CSonicString::Translate()
 				}
 				else
 				{
-					MAP_STR_TO_FUNC::iterator it = m_mapFunc.find((LPCSTR)strOne);
+					MAP_STR_TO_FUNC::iterator it = m_mapFunc.find((LPCTSTR)strOne);
 					if(it != m_mapFunc.end())
 					{
 						(this->*(it->second))(NULL, block);
@@ -254,13 +254,13 @@ BOOL CSonicString::Translate()
 				int i;
 				for(i = 0; i < strStuff.GetLength(); i++)
 				{
-					if(strStuff.GetAt(i) == '\n')
+					if(strStuff.GetAt(i) == _T('\n'))
 					{
 						break;
 					}
-					if(strStuff.GetAt(i) == '/')
+					if(strStuff.GetAt(i) == _T('/'))
 					{
-						if(strStuff.GetAt(i + 1) == '/')
+						if(strStuff.GetAt(i + 1) == _T('/'))
 						{
 							bDoubleSlash = TRUE;
 							i++;
@@ -277,7 +277,7 @@ BOOL CSonicString::Translate()
 					block.strText = strStuff.Left(i);
 					if(bDoubleSlash)
 					{
-						block.strText.Replace("//", "/");
+						block.strText.Replace(_T("//"), _T("/"));
 					}
 					m_strText += block.strText;
 				}
@@ -289,7 +289,7 @@ BOOL CSonicString::Translate()
 						block.nType = BLOCK_TYPE_NONE;
 					}
 				}
-				if(strStuff.GetAt(i) == '\n')
+				if(strStuff.GetAt(i) == _T('\n'))
 				{
 					block.nType |= BLOCK_TYPE_CHAR;
 					nCurrentLine++;
@@ -302,7 +302,7 @@ BOOL CSonicString::Translate()
 			if(block.nType & BLOCK_TYPE_ANI_NUM)
 			{
 				int nNum = abs(m_Effect.ani_num.nFrom) > abs(m_Effect.ani_num.nTo) ? m_Effect.ani_num.nFrom : m_Effect.ani_num.nTo;
-				block.strText.Format("%d", nNum);
+				block.strText.Format(_T("%d"), nNum);
 			}
 			
 			// insert
@@ -426,7 +426,7 @@ BOOL CSonicString::CalculateBlockRect(HDC hdc)
 			{
 				if(block.strText.IsEmpty())
 				{
-					GetTextExtentPoint32(hdc, " ", 1, &sz);
+					GetTextExtentPoint32(hdc, _T(" "), 1, &sz);
 					nBlockWidth = 0;
 				}
 				else
@@ -842,7 +842,7 @@ void CSonicString::ChangeStatus(int nStatus)
 
 void CSonicString::OnClickLink(ISonicString * pStr, DWORD dwReserve)
 {
-	ShellExecute(NULL, "open", "iexplore.exe", m_Link.strLink, NULL, SW_SHOW);
+	ShellExecute(NULL, _T("open"), _T("iexplore.exe"), m_Link.strLink, NULL, SW_SHOW);
 }
 
 void CSonicString::OnInternalTimer(DWORD dwTimerId)
@@ -1010,7 +1010,7 @@ void CSonicString::DrawUnderLine(HDC hdc, int x, int y, STRING_BLOCK &block)
 	DeleteObject(pen);
 }
 
-LPCSTR CSonicString::GetStr()
+LPCTSTR CSonicString::GetStr()
 {
 	return m_strNake;
 }
@@ -1182,7 +1182,7 @@ void CSonicString::PrepareTextCache()
 	m_pTextCache->Delegate(DELEGATE_EVENT_PAINT, NULL, this, &CSonicString::RenderText);
 }
 
-void CSonicString::Ctrl_a(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_a(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.nType |= BLOCK_TYPE_LINK;
 	m_Link.nLinkCount++;
@@ -1194,7 +1194,7 @@ void CSonicString::Ctrl_a(LPCSTR szValue, STRING_BLOCK & block)
 	}
 }
 
-void CSonicString::Ctrl_def(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_def(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	if(m_GlobalBlock.nType)
 	{
@@ -1204,36 +1204,36 @@ void CSonicString::Ctrl_def(LPCSTR szValue, STRING_BLOCK & block)
 	}
 }
 
-void CSonicString::Ctrl_c(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_c(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%x", &block.dwColor);
+	_stscanf(szValue, _T("%x"), &block.dwColor);
 }
 
-void CSonicString::Ctrl_btn_type(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_btn_type(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Link.nBtnType);
+	_stscanf(szValue, _T("%d"), &m_Link.nBtnType);
 }
 
-void CSonicString::Ctrl_line_width(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_line_width(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_nLineWidth);
+	_stscanf(szValue, _T("%d"), &m_nLineWidth);
 }
 
-void CSonicString::Ctrl_single_line(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_single_line(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_nSingleLine);
+	_stscanf(szValue, _T("%d"), &m_nSingleLine);
 }
 
-void CSonicString::Ctrl_br_offset(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_br_offset(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_nBrOffset);
+	_stscanf(szValue, _T("%d"), &m_nBrOffset);
 }
 
-void CSonicString::Ctrl_p(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_p(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.nType &= ~BLOCK_TYPE_CHAR;
 	block.nType |= BLOCK_TYPE_IMAGE;
-	sscanf(szValue, "%d", &block.Image.pNormal);
+	_stscanf(szValue, _T("%d"), &block.Image.pNormal);
 	if(!g_UI.IsValidObject(block.Image.pNormal))
 	{
 		throw CErrorContext(ERROR_ID_INVALID_OBJECT_ID);
@@ -1244,105 +1244,105 @@ void CSonicString::Ctrl_p(LPCSTR szValue, STRING_BLOCK & block)
 	}
 }
 
-void CSonicString::Ctrl_ph(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ph(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &block.Image.pHover);
+	_stscanf(szValue, _T("%d"), &block.Image.pHover);
 	if(!g_UI.IsValidObject(block.Image.pHover))
 	{
 		throw CErrorContext(ERROR_ID_INVALID_OBJECT_ID);
 	}
 }
 
-void CSonicString::Ctrl_pc(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_pc(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &block.Image.pClick);
+	_stscanf(szValue, _T("%d"), &block.Image.pClick);
 	if(!g_UI.IsValidObject(block.Image.pClick))
 	{
 		throw CErrorContext(ERROR_ID_INVALID_OBJECT_ID);
 	}
 }
 
-void CSonicString::Ctrl_linkl(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_linkl(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Link.nLinkLine);
+	_stscanf(szValue, _T("%d"), &m_Link.nLinkLine);
 }
 
-void CSonicString::Ctrl_linkt(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_linkt(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_strTip = szValue;
 	m_strTip.Trim('\'');
 }
 
-void CSonicString::Ctrl_linkh(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_linkh(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%x", &m_Link.dwHoverColor);
+	_stscanf(szValue, _T("%x"), &m_Link.dwHoverColor);
 }
 
-void CSonicString::Ctrl_linkc(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_linkc(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Link.nUseHand);
+	_stscanf(szValue, _T("%d"), &m_Link.nUseHand);
 }
 
-void CSonicString::Ctrl_key(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_key(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.Image.dp.dwMask |= DP_COLOR_KEY;
-	sscanf(szValue, "%x", &block.Image.dp.dwColorKey);
+	_stscanf(szValue, _T("%x"), &block.Image.dp.dwColorKey);
 }
 
-void CSonicString::Ctrl_pClip(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_pClip(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.Image.dp.dwMask |= DP_SRC_CLIP;
-	sscanf(szValue, "%d|%d|%d|%d", &block.Image.dp.rtSrc.left, &block.Image.dp.rtSrc.top, &block.Image.dp.rtSrc.right,
+	_stscanf(szValue, _T("%d|%d|%d|%d"), &block.Image.dp.rtSrc.left, &block.Image.dp.rtSrc.top, &block.Image.dp.rtSrc.right,
 		&block.Image.dp.rtSrc.bottom);
 }
 
-void CSonicString::Ctrl_animation(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_animation(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Link.nAlphaStep);
+	_stscanf(szValue, _T("%d"), &m_Link.nAlphaStep);
 	if(m_Link.nAlphaStep > 255 || m_Link.nAlphaStep < 0)
 	{
 		throw CErrorContext(ERROR_ID_STRING_FORMAT);
 	}
 }
 
-void CSonicString::Ctrl_align(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_align(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_nLineAlign);
+	_stscanf(szValue, _T("%d"), &m_nLineAlign);
 }
 
-void CSonicString::Ctrl_font(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.Font.Init();
 }
 
-void CSonicString::Ctrl_font_bold(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_bold(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &block.Font.bBold);
+	_stscanf(szValue, _T("%d"), &block.Font.bBold);
 }
 
-void CSonicString::Ctrl_font_height(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_height(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &block.Font.nHeight);
+	_stscanf(szValue, _T("%d"), &block.Font.nHeight);
 }
 
-void CSonicString::Ctrl_font_italic(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_italic(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &block.Font.bItalic);
+	_stscanf(szValue, _T("%d"), &block.Font.bItalic);
 }
 
-void CSonicString::Ctrl_font_strikeout(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_strikeout(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &block.Font.bStrikeOut);
+	_stscanf(szValue, _T("%d"), &block.Font.bStrikeOut);
 }
 
-void CSonicString::Ctrl_font_face(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_face(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	CString str = szValue;
-	str.Trim('\'');
-	sscanf(str, "%s", &block.Font.szFaceName);
+	str.Trim(_T('\''));
+	_stscanf(str, _T("%s"), &block.Font.szFaceName);
 }
 
-void CSonicString::Ctrl_sparkle(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_sparkle(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_Effect.dwMask |= STRING_EFFECT_SPARKLE;
 	m_Effect.sparkle.nSparkleInterval = 300;
@@ -1351,22 +1351,22 @@ void CSonicString::Ctrl_sparkle(LPCSTR szValue, STRING_BLOCK & block)
 	m_Effect.sparkle.nSparkleColor[2] = RGB(0, 0, 255);
 }
 
-void CSonicString::Ctrl_sparkle_color(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_sparkle_color(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%x|%x|%x", &m_Effect.sparkle.nSparkleColor[0], &m_Effect.sparkle.nSparkleColor[1], &m_Effect.sparkle.nSparkleColor[2]);
+	_stscanf(szValue, _T("%x|%x|%x"), &m_Effect.sparkle.nSparkleColor[0], &m_Effect.sparkle.nSparkleColor[1], &m_Effect.sparkle.nSparkleColor[2]);
 }
 
-void CSonicString::Ctrl_sparkle_interval(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_sparkle_interval(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Effect.sparkle.nSparkleInterval);
+	_stscanf(szValue, _T("%d"), &m_Effect.sparkle.nSparkleInterval);
 }
 
-void CSonicString::Ctrl_sparkle_timeout(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_sparkle_timeout(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Effect.sparkle.nSparkleTimeout);
+	_stscanf(szValue, _T("%d"), &m_Effect.sparkle.nSparkleTimeout);
 }
 
-void CSonicString::Ctrl_fadeout(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_fadeout(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_Effect.dwMask |= STRING_EFFECT_FADEOUT;
 	m_Effect.fadeout.nMaxAlpha = 255;
@@ -1375,27 +1375,27 @@ void CSonicString::Ctrl_fadeout(LPCSTR szValue, STRING_BLOCK & block)
 	m_Effect.fadeout.nCurrAlpha = 255;
 }
 
-void CSonicString::Ctrl_fadeout_max(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_fadeout_max(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Effect.fadeout.nMaxAlpha );
+	_stscanf(szValue, _T("%d"), &m_Effect.fadeout.nMaxAlpha );
 	if(m_Effect.fadeout.nMaxAlpha)
 	{
 		m_Effect.fadeout.nMaxAlpha  = m_Effect.fadeout.nMaxAlpha  % 256;
 	}
 }
 
-void CSonicString::Ctrl_fadeout_min(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_fadeout_min(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Effect.fadeout.nMinAlpha);
+	_stscanf(szValue, _T("%d"), &m_Effect.fadeout.nMinAlpha);
 	if(m_Effect.fadeout.nMinAlpha)
 	{
 		m_Effect.fadeout.nMinAlpha = m_Effect.fadeout.nMinAlpha % 256;
 	}
 }
 
-void CSonicString::Ctrl_fadeout_speed(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_fadeout_speed(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Effect.fadeout.nAlphaSpeed);
+	_stscanf(szValue, _T("%d"), &m_Effect.fadeout.nAlphaSpeed);
 	if(m_Effect.fadeout.nAlphaSpeed)
 	{
 		m_Effect.fadeout.nAlphaSpeed = m_Effect.fadeout.nAlphaSpeed % 256;
@@ -1420,22 +1420,22 @@ void CSonicString::ReleaseCapture()
 	}
 }
 
-void CSonicString::Ctrl_line_space(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_line_space(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_nLineSpace);
+	_stscanf(szValue, _T("%d"), &m_nLineSpace);
 }
 
-void CSonicString::Ctrl_global(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_global(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.nType |= BLOCK_TYPE_GLOBAL;
 }
 
-void CSonicString::Ctrl_pass_msg(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_pass_msg(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_Link.nPassMsg = TRUE;
 }
 
-void CSonicString::Ctrl_ani_num(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ani_num(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_Effect.dwMask |= STRING_EFFECT_ANI_NUM;
 	m_Effect.ani_num.nFrom = 0;
@@ -1444,19 +1444,19 @@ void CSonicString::Ctrl_ani_num(LPCSTR szValue, STRING_BLOCK & block)
 	block.nType |= BLOCK_TYPE_ANI_NUM;
 }
 
-void CSonicString::Ctrl_ani_num_from(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ani_num_from(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Effect.ani_num.nFrom);
+	_stscanf(szValue, _T("%d"), &m_Effect.ani_num.nFrom);
 }
 
-void CSonicString::Ctrl_ani_num_to(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ani_num_to(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Effect.ani_num.nTo);
+	_stscanf(szValue, _T("%d"), &m_Effect.ani_num.nTo);
 }
 
-void CSonicString::Ctrl_ani_num_frame(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ani_num_frame(LPCTSTR szValue, STRING_BLOCK & block)
 {
-	sscanf(szValue, "%d", &m_Effect.ani_num.nFrame);
+	_stscanf(szValue, _T("%d"), &m_Effect.ani_num.nFrame);
 }
 
 BOOL CSonicString::AnimateAniNum(BOOL b /* = TRUE */)
@@ -1479,7 +1479,7 @@ BOOL CSonicString::AnimateAniNum(BOOL b /* = TRUE */)
 				STRING_BLOCK & block = *it;
 				if(block.nType & BLOCK_TYPE_ANI_NUM)
 				{
-					block.strText.Format("%d", m_Effect.ani_num.nTo);
+					block.strText.Format(_T("%d"), m_Effect.ani_num.nTo);
 				}
 			}
 		}
@@ -1512,7 +1512,7 @@ void CSonicString::OnTimerAniNum()
 		STRING_BLOCK & block = *it;
 		if(block.nType & BLOCK_TYPE_ANI_NUM)
 		{
-			block.strText.Format("%d", nCurr);
+			block.strText.Format(_T("%d"), nCurr);
 		}
 	}
 	if(m_Effect.ani_num.nCurrFrame >= m_Effect.ani_num.nFrame)
@@ -1720,7 +1720,7 @@ void CSonicString::RenderText(ISonicPaint * pPaint, LPVOID)
 	}
 }
 
-void CSonicString::Ctrl_init_normal(LPCSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_init_normal(LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_bInitNormal = TRUE;
 }

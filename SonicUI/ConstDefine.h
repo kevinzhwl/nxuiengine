@@ -1,11 +1,11 @@
 #pragma once
 
 
-#define IMAGE_NAME		"IMAGE"
-#define MY_WND			"SonicWnd"
-#define CHILD_PROC		"ChildProc"
-#define EFFECT_HELP_WND	"EffectHelpWnd"
-#define EHT_PROP		"EHTProp"
+#define IMAGE_NAME		_T("IMAGE")
+#define MY_WND			_T("SonicWnd")
+#define CHILD_PROC		_T("ChildProc")
+#define EFFECT_HELP_WND	_T("EffectHelpWnd")
+#define EHT_PROP		_T("EHTProp")
 #define WND_EFFECT_PROP_NAME	_T("SonicWndEffect")
 #define DEFAULT_JPEG_QULITY		75
 

@@ -8,7 +8,7 @@ public:
 	~CSimpleToolTip(void);
 	BOOL Create(HWND hParent);
 	void Destory();
-	void SetTipText(LPCSTR lpszText, HWND hWnd, RECT& rt, DWORD dwCurrentHolder);
+	void SetTipText(LPCTSTR lpszText, HWND hWnd, RECT& rt, DWORD dwCurrentHolder);
 
 	// 设置tip的宽度，如果为0，则没有强制宽度，tip都单行显示，否则按所给宽度换行显示
 	void SetTipWidth(int nWidth);

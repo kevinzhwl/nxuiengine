@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include ".\simpletooltip.h"
 #include "commctrl.h"
-#pragma comment(lib, "comctl32.lib")
+///#pragma comment(lib, "comctl32.lib")
 
 CSimpleToolTip::CSimpleToolTip(void)
 {
@@ -60,7 +60,7 @@ void CSimpleToolTip::Destory()
 	}
 }
 
-void CSimpleToolTip::SetTipText(LPCSTR lpszText, HWND hWnd, RECT& rt, DWORD dwCurrentHolder)
+void CSimpleToolTip::SetTipText(LPCTSTR lpszText, HWND hWnd, RECT& rt, DWORD dwCurrentHolder)
 {
 	TOOLINFO ti;
 	ti.cbSize = sizeof(ti);
@@ -83,7 +83,7 @@ void CSimpleToolTip::SetTipText(LPCSTR lpszText, HWND hWnd, RECT& rt, DWORD dwCu
 	ti.hwnd = m_hFakeParent;
 	ti.hinst = NULL;
 	ti.uId = 0;
-	ti.lpszText = (LPSTR)lpszText;
+	ti.lpszText = (LPTSTR)lpszText;
 	// ToolTip control will cover the whole window
 	ti.rect.left = rt.left;    
 	ti.rect.top = rt.top;
