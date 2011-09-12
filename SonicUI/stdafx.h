@@ -14,20 +14,10 @@
 #include <afx.h>
 #include <afxwin.h>
 */
-#define _CRT_SECURE_NO_DEPRECATE
+
 #define WIN32_LEAN_AND_MEAN		// 从 Windows 头中排除极少使用的资料
 // Windows 头文件:
-#define VC_EXTRALEAN		// Exclude rarely-used stuff from Windows headers
-
-#include <afxwin.h>         // MFC core and standard components
-#include <afxext.h>         // MFC extensions
-#include <afxdisp.h>        // MFC Automation classes
-#include <afxdtctl.h>		// MFC support for Internet Explorer 4 Common Controls
-#ifndef _AFX_NO_AFXCMN_SUPPORT
-#include <afxcmn.h>			// MFC support for Windows Common Controls
-#endif // _AFX_NO_AFXCMN_SUPPORT
-
-//#include <windows.h>
+#include <windows.h>
 #include <atlbase.h>
 #include <atlstr.h>
 #include <atltypes.h>

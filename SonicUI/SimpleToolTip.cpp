@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include ".\simpletooltip.h"
-//#include "commctrl.h"
-//#pragma comment(lib, "comctl32.lib")
+#include "commctrl.h"
+#pragma comment(lib, "comctl32.lib")
 
 CSimpleToolTip::CSimpleToolTip(void)
 {

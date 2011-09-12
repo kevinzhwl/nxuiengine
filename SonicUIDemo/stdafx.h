@@ -1,8 +1,6 @@
 // stdafx.h : 标准系统包含文件的包含文件，
 // 或是常用但不常更改的项目特定的包含文件
 //
-
-#define _CRT_SECURE_NO_DEPRECATE
 #include <windows.h>
 // C 运行时头文件
 #include <stdlib.h>

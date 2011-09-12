@@ -5,7 +5,6 @@ using namespace sonic_ui;
 #include "SimpleToolTip.h"
 #include "ISonicBaseData.h"
 
-
 // wParam:CSonicString *
 // HIWORD(lParam):EVENT
 // LOWORD(lParam):SysParam
@@ -54,7 +53,7 @@ class CSonicUI : public ISonicUI
 public:
 	CSonicUI();
 	virtual ~CSonicUI();
-	virtual ISonicSkin* CreateSkin();
+	virtual ISonicSkin * CreateSkin();
 	virtual ISonicImage * CreateImage();
 	virtual ISonicWndEffect * CreateWndEffect();
 	virtual ISonicString * CreateString();
