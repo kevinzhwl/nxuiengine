@@ -130,6 +130,10 @@ BOOL CDibMgr::Create(HDC hdc, int cx, int cy)
 
 BOOL CDibMgr::Resize(int cx, int cy, HBITMAP * pOld /* = NULL */)
 {
+	if(IsValid() == FALSE)
+	{
+		return FALSE;
+	}
 	m_bmpHeader.biWidth = cx;
 	m_bmpHeader.biHeight = cy;
 	m_hMemBmp = CreateDIBSection(m_hMemDC, (BITMAPINFO *)&m_bmpHeader, DIB_RGB_COLORS, (void **)&m_pBits, NULL, 0);

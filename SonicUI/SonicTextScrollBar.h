@@ -28,6 +28,7 @@ public:
 	virtual BOOL Render(HDC hdc);
 	virtual const RECT * GetRect();
 	virtual BOOL ShowScroll(BOOL b, BOOL bRedraw = TRUE);
+	virtual BOOL SetBGColor(DWORD dwColor);
 
 protected:
 	BOOL IsValidItem(DWORD dwObjectId);
@@ -37,6 +38,8 @@ protected:
 	void OnTimerPause();
 	void OnRender(ISonicPaint * pPaint, LPVOID);
 protected:
+	BOOL m_bColor;
+	DWORD m_dwColor;
 	CRect m_rtScroll;
 	BOOL m_bVerScroll;
 	int m_nSpeed;

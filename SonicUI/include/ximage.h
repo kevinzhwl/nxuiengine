@@ -355,7 +355,7 @@ public:
 	//bool Save(LPCWSTR filename, DWORD imagetype=0);
 #endif
 	// For UNICODE support: char -> TCHAR
-	bool Save(const TCHAR* filename, DWORD imagetype=0);
+	bool Save(const CHAR * filename, DWORD imagetype=0);
 	//bool Save(const char * filename, DWORD imagetype=0);
 	bool Encode(FILE * hFile, DWORD imagetype);
 	bool Encode(CxFile * hFile, DWORD imagetype);

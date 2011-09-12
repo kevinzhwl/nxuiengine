@@ -1,7 +1,7 @@
 #include "StdAfx.h"
 #include ".\simpletooltip.h"
-#include "commctrl.h"
-///#pragma comment(lib, "comctl32.lib")
+//#include "commctrl.h"
+//#pragma comment(lib, "comctl32.lib")
 
 CSimpleToolTip::CSimpleToolTip(void)
 {
@@ -62,8 +62,8 @@ void CSimpleToolTip::Destory()
 
 void CSimpleToolTip::SetTipText(LPCTSTR lpszText, HWND hWnd, RECT& rt, DWORD dwCurrentHolder)
 {
-	TOOLINFO ti;
-	ti.cbSize = sizeof(ti);
+	TOOLINFO ti = {0};
+	ti.cbSize = sizeof(ti) - sizeof(void *);
 	if((m_hFakeParent && m_hFakeParent != hWnd)
 		|| (m_dwCurrentHolder && m_dwCurrentHolder != dwCurrentHolder))
 	{		
@@ -78,12 +78,12 @@ void CSimpleToolTip::SetTipText(LPCTSTR lpszText, HWND hWnd, RECT& rt, DWORD dwC
 	// struct specifying info about tool in ToolTip control
 
 	/* INITIALIZE MEMBERS OF THE TOOLINFO STRUCTURE */
-	ti.cbSize = sizeof(TOOLINFO);
 	ti.uFlags = TTF_SUBCLASS;
 	ti.hwnd = m_hFakeParent;
 	ti.hinst = NULL;
 	ti.uId = 0;
 	ti.lpszText = (LPTSTR)lpszText;
+
 	// ToolTip control will cover the whole window
 	ti.rect.left = rt.left;    
 	ti.rect.top = rt.top;
@@ -109,7 +109,7 @@ void CSimpleToolTip::SetTipWidth(int nWidth)
 void CSimpleToolTip::ClearTip()
 {
 	TOOLINFO ti;
-	ti.cbSize = sizeof(ti);
+	ti.cbSize = sizeof(ti) - sizeof(void *);
 	if(m_hFakeParent)
 	{
 		ti.hwnd = m_hFakeParent;

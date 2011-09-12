@@ -28,7 +28,7 @@ public:
 	virtual BOOL Rotate(int nAngle, POINT * pScout = NULL);
 	virtual BOOL SaveAsFile(LPCTSTR lpszFileName, enImageType imgType, int nQuality = 0);
 	virtual BOOL Gray();
-	virtual HRGN CreateRgn(DWORD dwColorKey = DEFAULT_COLOR_KEY);
+	virtual HRGN CreateRgn(DWORD dwColorKey = DEFAULT_COLOR_KEY, int x = 0, int y = 0, RECT * pRtSrc = NULL, BOOL bReverse = FALSE);
 	virtual BOOL IsAlphaChannelValid();
 	virtual DWORD GetPixel(int x, int y);
 	virtual BOOL SetPixel(int x, int y, DWORD dwColor);
@@ -45,10 +45,12 @@ public:
 	virtual HDC GetDC();
 	virtual BOOL DestroyAlphaChannel();
 	virtual BOOL Blur(int nType = 0);
+	virtual BOOL SetAlphaChannel(BYTE bAlpha);
     
 	CDibMgr & GetImageDib(){return m_Dib;}
 	static BOOL Init();
 private:
+	BOOL InternalDraw(HDC hdc, int x, int y, DRAW_PARAM * pDp); 
 	virtual BOOL Load(HGLOBAL hGlobal, DWORD dwSize);
 	BOOL PrepareMemDC(int cx, int cy);
 	BOOL EnableAlphaChannel(BOOL bModifyRgb = TRUE);

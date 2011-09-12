@@ -3,6 +3,7 @@
 #include "SonicUI.h"
 #include "ConstDefine.h"
 #include "SSE.h"
+#include "shellapi.h"
 
 HFONT CSonicString::m_hFont = NULL;
 CSonicString::MAP_STR_TO_FUNC CSonicString::m_mapFunc;
@@ -40,6 +41,7 @@ void CSonicString::InitValue()
 	m_bInitNormal = FALSE;
 	m_pOrigin = NULL;
 	m_pTextCache = NULL;
+	m_bEnabled = TRUE;
 }
 
 void CSonicString::Clear()
@@ -87,10 +89,14 @@ BOOL CSonicString::Init()
 	m_mapFunc[_T("linkc")] = &CSonicString::Ctrl_linkc;
 	m_mapFunc[_T("linkh")] = &CSonicString::Ctrl_linkh;
 	m_mapFunc[_T("p")] = &CSonicString::Ctrl_p;
-	m_mapFunc[_T("ph")] = &CSonicString::Ctrl_ph;
-	m_mapFunc[_T("pc")] = &CSonicString::Ctrl_pc;
+	m_mapFunc[_T("p2")] = &CSonicString::Ctrl_p;
+	m_mapFunc[_T("p3")] = &CSonicString::Ctrl_p;
+	m_mapFunc[_T("p4")] = &CSonicString::Ctrl_p;
 	m_mapFunc[_T("key")] = &CSonicString::Ctrl_key;
 	m_mapFunc[_T("btn_type")] = &CSonicString::Ctrl_btn_type;
+	m_mapFunc[_T("btn_text")] = &CSonicString::Ctrl_btn_text;
+	m_mapFunc[_T("btn_width")] = &CSonicString::Ctrl_btn_width;
+	m_mapFunc[_T("btn_height")] = &CSonicString::Ctrl_btn_height;
 	m_mapFunc[_T("pClip")] = &CSonicString::Ctrl_pClip;
 	m_mapFunc[_T("line_width")] = &CSonicString::Ctrl_line_width;
 	m_mapFunc[_T("single_line")] = &CSonicString::Ctrl_single_line;
@@ -127,6 +133,20 @@ HFONT CSonicString::GetDefSonicFont()
 	return m_hFont;
 }
 
+BOOL CSonicString::DrawText(HDC hDC, int x, int y, LPCTSTR lpszString, DWORD dwColor /* = 0 */, HFONT hFont /* = NULL */)
+{
+	if(hFont == NULL)
+	{
+		hFont = GetDefSonicFont();
+	}
+	SetBkColor(hDC, dwColor);
+	SetBkMode(hDC, TRANSPARENT);
+	HFONT hOldFont = (HFONT)SelectObject(hDC, hFont);
+	::TextOut(hDC, x, y, lpszString, lstrlen(lpszString));
+	SelectObject(hDC, hOldFont);
+	return TRUE;
+}
+
 BOOL CSonicString::Format(LPCTSTR lpszArg, ...)
 {
 	TCHAR message[1024];
@@ -135,9 +155,21 @@ BOOL CSonicString::Format(LPCTSTR lpszArg, ...)
 	_vsntprintf(message, sizeof(message), lpszArg, argList);
 	va_end(argList);
 
+	CRect rtRedraw;
+	HWND hWndLast = m_hWnd;
+	if(hWndLast)
+	{
+		rtRedraw = m_rtString;
+	}
 	Clear();
 	m_strNake = message;
-	return Translate();
+	BOOL bRet =  Translate();
+	if(hWndLast)
+	{
+		rtRedraw.SetRect(rtRedraw.left, rtRedraw.top, rtRedraw.left + m_rtString.Width(), rtRedraw.top + m_rtString.Height());
+		InvalidateRect(hWndLast, &rtRedraw, TRUE);
+	}
+	return bRet;
 }
 
 BOOL CSonicString::Translate()
@@ -151,13 +183,14 @@ BOOL CSonicString::Translate()
 	{
 		CString strStuff = m_strNake;
 		int nCurrentLine = 1;
+		m_GlobalBlock.Font.Init();
 		while (!strStuff.IsEmpty())
 		{
 			STRING_BLOCK block;
 			block.nLine = nCurrentLine;
 			if(strStuff.GetAt(0) != _T('/'))
 			{
-				strStuff = "/def/" + strStuff;
+				strStuff = _T("/def/") + strStuff;
 			}
 
 			// process ctrl text
@@ -169,9 +202,9 @@ BOOL CSonicString::Translate()
 					nFind = i;
 					break;
 				}
-				if(strStuff.GetAt(i) == '\'')
+				if(strStuff.GetAt(i) == _T('\''))
 				{
-					int nOtherQuote = strStuff.Find('\'', i + 1);
+					int nOtherQuote = strStuff.Find(_T('\''), i + 1);
 					if(nOtherQuote < 0)
 					{
 						throw CErrorContext(ERROR_ID_STRING_FORMAT);
@@ -193,14 +226,14 @@ BOOL CSonicString::Translate()
 				int nFind = -1;
 				for(int i = 0; i < strCtrl.GetLength(); i++)
 				{
-					if(strCtrl.GetAt(i) == ',')
+					if(strCtrl.GetAt(i) == _T(','))
 					{
 						nFind = i;
 						break;
 					}
-					if(strCtrl.GetAt(i) == '\'')
+					if(strCtrl.GetAt(i) == _T('\''))
 					{
-						int nOtherQuote = strCtrl.Find('\'', i + 1);
+						int nOtherQuote = strCtrl.Find(_T('\''), i + 1);
 						if(nOtherQuote < 0)
 						{
 							throw CErrorContext(ERROR_ID_STRING_FORMAT);
@@ -216,17 +249,22 @@ BOOL CSonicString::Translate()
 				}
 				else
 				{
+					// last kerword
 					strOne = strCtrl;
 					strCtrl.Empty();
 				}
 				
-				nFind = strOne.Find('=');
+				nFind = strOne.Find(_T('='));
 				if(nFind > 0)
 				{
-					MAP_STR_TO_FUNC::iterator it = m_mapFunc.find((LPCTSTR)strOne.Left(nFind));
+					CString strKey = strOne.Left(nFind);
+					MAP_STR_TO_FUNC::iterator it = m_mapFunc.find((LPCTSTR)strKey);
 					if(it != m_mapFunc.end())
 					{
-						(this->*(it->second))(strOne.Mid(nFind + 1), block);
+						CString strVal = strOne.Mid(nFind + 1);
+						strVal.TrimLeft(_T('\''));
+						strVal.TrimRight(_T('\''));
+						(this->*(it->second))((LPCTSTR)strKey, strVal, block);
 					}
 					else
 					{
@@ -238,7 +276,7 @@ BOOL CSonicString::Translate()
 					MAP_STR_TO_FUNC::iterator it = m_mapFunc.find((LPCTSTR)strOne);
 					if(it != m_mapFunc.end())
 					{
-						(this->*(it->second))(NULL, block);
+						(this->*(it->second))(strOne, NULL, block);
 					}
 					else
 					{
@@ -308,7 +346,12 @@ BOOL CSonicString::Translate()
 			// insert
 			if(block.nType & BLOCK_TYPE_GLOBAL)
 			{
-				m_GlobalBlock = block;
+				m_GlobalBlock.nType = block.nType;
+				m_GlobalBlock.dwColor = block.dwColor;
+				if(block.Font.bValid)
+				{
+					m_GlobalBlock.Font = block.Font;
+				}
 				m_GlobalBlock.nType &= ~BLOCK_TYPE_GLOBAL;
 			}
 			else if(block.nType)
@@ -411,7 +454,7 @@ BOOL CSonicString::CalculateBlockRect(HDC hdc)
 					block.strText = block.strText.Left(nMaxBlockChar);
 					if(m_nSingleLine == 2)
 					{
-						block.strText += "...";
+						block.strText += _T("...");
 						m_strTip = m_strText;
 					}
 					SIZE szAdjust;
@@ -437,16 +480,53 @@ BOOL CSonicString::CalculateBlockRect(HDC hdc)
 			}
 			block.Font.Restore();
 			block.rtBlock.SetRect(x, y, x + nBlockWidth, y + sz.cy);
+
+			// add 2 extra pixel for the underline
+			if(block.nType & BLOCK_TYPE_LINK && m_Link.nLinkLine)
+			{
+				block.rtBlock.bottom += 2;
+			}
 			
 		}
 		if(block.nType & BLOCK_TYPE_IMAGE)
 		{
-			if(block.Image.pNormal == block.Image.pHover && block.Image.pHover == block.Image.pClick)
+			SIZE sz;
+			int nImgWidth = block.Image.pImage[0]->GetWidth();
+			if(block.Image.pImage[0] == block.Image.pImage[1])
 			{					
 				block.Image.dp.dwMask |= DP_SRC_CLIP;
-				SetRect(&block.Image.dp.rtSrc, 0, 0, block.Image.pNormal->GetWidth() / 3, block.Image.pNormal->GetHeight());
+				SetRect(&block.Image.dp.rtSrc, 0, 0, block.Image.pImage[0]->GetWidth() / block.Image.nImageStateNum, block.Image.pImage[0]->GetHeight());
+				nImgWidth = block.Image.pImage[0]->GetWidth() / block.Image.nImageStateNum;
 			}
-            block.rtBlock = block.Image.pNormal->CalculateRectByDrawParam(x, y, &block.Image.dp);
+			// auto adjust length of image button to fit the button text
+			if((block.nType & BLOCK_TYPE_LINK))
+			{
+				if(m_Link.strBtnText.IsEmpty() == FALSE)
+				{
+					m_GlobalBlock.Font.SwitchFont(hdc);
+					GetTextExtentPoint32(hdc, m_Link.strBtnText, m_Link.strBtnText.GetLength(), &sz);
+					m_GlobalBlock.Font.Restore();
+					if(sz.cx  + nImgWidth / 2 > nImgWidth)
+					{
+						block.Image.dp.dwMask |= DP_TILE;
+						block.Image.dp.nTileDivider = 4;
+						block.Image.dp.nTileLength = sz.cx + nImgWidth / 2;
+					}
+				}
+				if(m_Link.nBtnWidth)
+				{
+					block.Image.dp.dwMask |= DP_TILE;
+					block.Image.dp.nTileDivider = 4;
+					block.Image.dp.nTileLength = m_Link.nBtnWidth;
+				}
+				if(m_Link.nBtnHeight)
+				{
+					block.Image.dp.dwMask |= DP_DEST_LIMIT;
+					block.Image.dp.cy = m_Link.nBtnHeight;
+				}
+			}
+			
+            block.rtBlock = block.Image.pImage[0]->CalculateRectByDrawParam(x, y, &block.Image.dp);
 			if(m_nLineWidth)
 			{
 				if(block.rtBlock.Width() > m_nLineWidth - m_nBrOffset)
@@ -463,8 +543,6 @@ BOOL CSonicString::CalculateBlockRect(HDC hdc)
 				}
 			}
 		}
-		// add 2 extra pixel for the underline
-		block.rtBlock.bottom += 2;
 		x += block.rtBlock.Width();
 
 		// extend the string rect
@@ -570,6 +648,10 @@ BOOL CSonicString::OnWndMsg(UINT msg, WPARAM wParam, LPARAM lParam)
 		return TRUE;
 	}
 	// mouse message below
+	if(IsEnabled() == FALSE)
+	{
+		return TRUE;
+	}
 	switch (msg)
 	{
 	case WM_MOUSELEAVE:
@@ -786,7 +868,7 @@ BOOL CSonicString::OnMouseWheel(WPARAM wParam, LPARAM lParam)
 	return TRUE;
 }
 
-BOOL CSonicString::ForceRedraw(BOOL bErase /* = FALSE */)
+BOOL CSonicString::ForceRedraw()
 {
 	Redraw();
 	return TRUE;
@@ -815,7 +897,7 @@ void CSonicString::ChangeStatus(int nStatus)
 	{
 		m_nLastStatus = m_nStatus;
 		m_nStatus = nStatus;
-		if(m_Link.nUseHand)
+		if(m_Link.nUseHand && m_Link.nBtnType != BTN_TYPE_CHECK)
 		{
 			if(m_nStatus == BTN_STATUS_HOVER && m_nLastStatus == BTN_STATUS_NORMAL)
 			{
@@ -842,7 +924,7 @@ void CSonicString::ChangeStatus(int nStatus)
 
 void CSonicString::OnClickLink(ISonicString * pStr, DWORD dwReserve)
 {
-	ShellExecute(NULL, _T("open"), _T("iexplore.exe"), m_Link.strLink, NULL, SW_SHOW);
+	ShellExecute(NULL, _T("open"), _T("iexplore.exe"), m_Link.strLink, NULL, SW_SHOWMAXIMIZED);
 }
 
 void CSonicString::OnInternalTimer(DWORD dwTimerId)
@@ -879,55 +961,78 @@ void CSonicString::OnInternalTimer(DWORD dwTimerId)
 
 void CSonicString::DrawImageBlock(HDC hdc, int x, int y, STRING_BLOCK &block, int nStatus, int nAlpha /* = -1 */)
 {
-	if((block.nType & BLOCK_TYPE_IMAGE) == FALSE)
+	if((block.nType & BLOCK_TYPE_IMAGE) == FALSE || !block.Image.nImageStateNum)
 	{
 		return;
 	}
-	ISonicImage * pImg = block.Image.pNormal;
+	ISonicImage * pImg = block.Image.pImage[0];
 	switch (nStatus)
 	{
 	case BTN_STATUS_NORMAL:
 		{
-			pImg = block.Image.pNormal;
-			if(pImg == block.Image.pHover)
+			pImg = block.Image.pImage[0];
+			if(pImg == block.Image.pImage[1])
 			{
-				SetRect(&block.Image.dp.rtSrc, 0, 0, pImg->GetWidth() / 3, pImg->GetHeight());
+				SetRect(&block.Image.dp.rtSrc, 0, 0, pImg->GetWidth() / block.Image.nImageStateNum, pImg->GetHeight());
 			}
 		}
 		break;
 	case BTN_STATUS_HOVER:
 		{
-			if(block.Image.pHover == NULL)
+			if(block.Image.nImageStateNum == 1)
 			{
-				pImg = block.Image.pNormal;
+				pImg = block.Image.pImage[0];
 			}
 			else
 			{
-				pImg = block.Image.pHover;
-				if(pImg == block.Image.pNormal)
+				if(block.Image.nImageStateNum == 2)
 				{
-					SetRect(&block.Image.dp.rtSrc, pImg->GetWidth() / 3, 0, pImg->GetWidth() * 2 / 3, pImg->GetHeight());
+					pImg = block.Image.pImage[0];
+					if(block.Image.pImage[0] == block.Image.pImage[1])
+					{
+						SetRect(&block.Image.dp.rtSrc, 0, 0, pImg->GetWidth() / block.Image.nImageStateNum, pImg->GetHeight());
+					}
+				}
+				else
+				{
+					pImg = block.Image.pImage[1];
+					if(block.Image.pImage[0] == block.Image.pImage[1])
+					{
+						SetRect(&block.Image.dp.rtSrc, pImg->GetWidth() / block.Image.nImageStateNum, 0, pImg->GetWidth() * 2 / block.Image.nImageStateNum, pImg->GetHeight());
+					}
 				}
 			}
 		}
 		break;
 	case BTN_STATUS_CLICK:
 		{
-			if(block.Image.pClick == NULL)
+			if(block.Image.nImageStateNum == 1)
 			{
-				pImg = block.Image.pNormal;
+				pImg = block.Image.pImage[0];
 			}
 			else
 			{
-				pImg = block.Image.pClick;
-				if(pImg == block.Image.pNormal)
+				if(block.Image.nImageStateNum == 2)
 				{
-					SetRect(&block.Image.dp.rtSrc, pImg->GetWidth() * 2 / 3, 0, pImg->GetWidth(), pImg->GetHeight());
+					pImg = block.Image.pImage[1];
+					if(block.Image.pImage[0] == block.Image.pImage[1])
+					{
+						SetRect(&block.Image.dp.rtSrc, pImg->GetWidth() / block.Image.nImageStateNum, 0, pImg->GetWidth(), pImg->GetHeight());
+					}
+				}
+				else
+				{
+					pImg = block.Image.pImage[2];
+					if(block.Image.pImage[0] == block.Image.pImage[1])
+					{
+						SetRect(&block.Image.dp.rtSrc, pImg->GetWidth() * 2 / block.Image.nImageStateNum, 0, pImg->GetWidth() * 3 / block.Image.nImageStateNum, pImg->GetHeight());
+					}
 				}
 			}
 		}
 		break;
 	}
+
 	if(nAlpha != -1)
 	{
 		block.Image.dp.dwMask |= DP_ALPHA;
@@ -937,7 +1042,30 @@ void CSonicString::DrawImageBlock(HDC hdc, int x, int y, STRING_BLOCK &block, in
 	{
 		block.Image.dp.dwMask &= ~DP_ALPHA;
 	}
+	if(IsEnabled() == FALSE && block.Image.nImageStateNum == 4)
+	{
+		// 当前Disabled，如果是四态图展示第四态
+		pImg = block.Image.pImage[3];
+		if(block.Image.pImage[0] == block.Image.pImage[1])
+		{
+			SetRect(&block.Image.dp.rtSrc, pImg->GetWidth() * 3 / block.Image.nImageStateNum, 0, pImg->GetWidth(), pImg->GetHeight());
+		}
+	}
 	pImg->Draw(hdc, x + block.rtBlock.left, y + block.rtBlock.top, &block.Image.dp);
+	if((block.nType & BLOCK_TYPE_LINK) && m_Link.strBtnText.IsEmpty() == FALSE)
+	{
+		SIZE sz;
+		SetTextColor(hdc, m_GlobalBlock.dwColor);
+		if(IsEnabled() == FALSE)
+		{
+			SetTextColor(hdc, DEFAULT_COLOR_KEY);
+		}
+		m_GlobalBlock.Font.SwitchFont(hdc);
+		GetTextExtentPoint32(hdc, m_Link.strBtnText, m_Link.strBtnText.GetLength(), &sz);
+		SetBkMode(hdc, TRANSPARENT);
+		::TextOut(hdc, x + block.rtBlock.left + (block.rtBlock.Width() - sz.cx) / 2, y + block.rtBlock.top + (block.rtBlock.Height() - sz.cy) / 2, m_Link.strBtnText, m_Link.strBtnText.GetLength());
+		m_GlobalBlock.Font.Restore();
+	}
 }
 
 BOOL CSonicString::AnimateGif(BOOL bBegin /* = TRUE */)
@@ -1013,6 +1141,11 @@ void CSonicString::DrawUnderLine(HDC hdc, int x, int y, STRING_BLOCK &block)
 LPCTSTR CSonicString::GetStr()
 {
 	return m_strNake;
+}
+
+LPCTSTR CSonicString::GetTextWithoutCtrl()
+{
+	return m_strText;
 }
 
 void CSonicString::ShowString(BOOL bShow /* = TRUE */, BOOL bRedraw /* = TRUE */)
@@ -1145,13 +1278,13 @@ BOOL CSonicString::Detach()
     return TRUE;
 }
 
-void CSonicString::Redraw()
+void CSonicString::Redraw(BOOL bEraseBackground /* = TRUE */)
 {
 	if(IsValid() == FALSE)
 	{
 		return;
 	}
-	m_pOrigin->Redraw();
+	m_pOrigin->Redraw(bEraseBackground);
 }
 
 DWORD CSonicString::GetBlockTextColor(STRING_BLOCK & block)
@@ -1182,121 +1315,146 @@ void CSonicString::PrepareTextCache()
 	m_pTextCache->Delegate(DELEGATE_EVENT_PAINT, NULL, this, &CSonicString::RenderText);
 }
 
-void CSonicString::Ctrl_a(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_a(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.nType |= BLOCK_TYPE_LINK;
 	m_Link.nLinkCount++;
 	if(szValue)
 	{
 		m_Link.strLink = szValue;
-		m_Link.strLink.Trim('\'');
 		Delegate(DELEGATE_EVENT_CLICK, NULL, this, &CSonicString::OnClickLink);
 	}
 }
 
-void CSonicString::Ctrl_def(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_def(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	if(m_GlobalBlock.nType)
 	{
 		int nLine = block.nLine;
-		block = m_GlobalBlock;
+		block.dwColor = m_GlobalBlock.dwColor;
+		block.Font = m_GlobalBlock.Font;
 		block.nLine = nLine;
 	}
 }
 
-void CSonicString::Ctrl_c(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_c(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%x"), &block.dwColor);
 }
 
-void CSonicString::Ctrl_btn_type(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_btn_type(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Link.nBtnType);
 }
 
-void CSonicString::Ctrl_line_width(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_btn_text(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
+{
+	m_Link.strBtnText = szValue;
+}
+
+void CSonicString::Ctrl_btn_width(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
+{
+	_stscanf(szValue, _T("%d"), &m_Link.nBtnWidth);
+}
+
+void CSonicString::Ctrl_btn_height(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
+{
+	_stscanf(szValue, _T("%d"), &m_Link.nBtnHeight);
+}
+
+void CSonicString::Ctrl_line_width(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_nLineWidth);
 }
 
-void CSonicString::Ctrl_single_line(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_single_line(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_nSingleLine);
 }
 
-void CSonicString::Ctrl_br_offset(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_br_offset(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_nBrOffset);
 }
 
-void CSonicString::Ctrl_p(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_p(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.nType &= ~BLOCK_TYPE_CHAR;
 	block.nType |= BLOCK_TYPE_IMAGE;
-	_stscanf(szValue, _T("%d"), &block.Image.pNormal);
-	if(!g_UI.IsValidObject(block.Image.pNormal))
+	if(szKey[1])
 	{
-		throw CErrorContext(ERROR_ID_INVALID_OBJECT_ID);
+		block.Image.nImageStateNum = szKey[1] - _T('0');
 	}
-	if(block.Image.pNormal->GetFrameCount())
+	else
+	{
+		block.Image.nImageStateNum = 1;
+	}
+	CString strValue = szValue;
+	if(strValue.Find(_T('|')) >= 0)
+	{
+		// 多图
+		switch(block.Image.nImageStateNum)
+		{
+		case 2:
+			_stscanf(szValue, _T("%d|%d"), &block.Image.pImage[0], &block.Image.pImage[1]);
+			break;
+		case 3:
+			_stscanf(szValue, _T("%d|%d|%d"), &block.Image.pImage[0], &block.Image.pImage[1], &block.Image.pImage[2]);
+			break;
+		case 4:
+			_stscanf(szValue, _T("%d|%d|%d|%d"), &block.Image.pImage[0], &block.Image.pImage[1], &block.Image.pImage[2], &block.Image.pImage[3]);
+			break;
+		}
+	}
+	else
+	{
+		// 单图多态平铺
+		_stscanf(szValue, _T("%d"), &block.Image.pImage[0]);
+		for(int i = 1; i < block.Image.nImageStateNum; i++)
+		{
+			block.Image.pImage[i] = block.Image.pImage[0];
+		}
+	}
+	if(block.Image.pImage[0]->GetFrameCount())
 	{
 		m_nGifCount++;
 	}
 }
 
-void CSonicString::Ctrl_ph(LPCTSTR szValue, STRING_BLOCK & block)
-{
-	_stscanf(szValue, _T("%d"), &block.Image.pHover);
-	if(!g_UI.IsValidObject(block.Image.pHover))
-	{
-		throw CErrorContext(ERROR_ID_INVALID_OBJECT_ID);
-	}
-}
-
-void CSonicString::Ctrl_pc(LPCTSTR szValue, STRING_BLOCK & block)
-{
-	_stscanf(szValue, _T("%d"), &block.Image.pClick);
-	if(!g_UI.IsValidObject(block.Image.pClick))
-	{
-		throw CErrorContext(ERROR_ID_INVALID_OBJECT_ID);
-	}
-}
-
-void CSonicString::Ctrl_linkl(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_linkl(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Link.nLinkLine);
 }
 
-void CSonicString::Ctrl_linkt(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_linkt(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_strTip = szValue;
-	m_strTip.Trim('\'');
 }
 
-void CSonicString::Ctrl_linkh(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_linkh(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%x"), &m_Link.dwHoverColor);
 }
 
-void CSonicString::Ctrl_linkc(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_linkc(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Link.nUseHand);
 }
 
-void CSonicString::Ctrl_key(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_key(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.Image.dp.dwMask |= DP_COLOR_KEY;
 	_stscanf(szValue, _T("%x"), &block.Image.dp.dwColorKey);
 }
 
-void CSonicString::Ctrl_pClip(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_pClip(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.Image.dp.dwMask |= DP_SRC_CLIP;
 	_stscanf(szValue, _T("%d|%d|%d|%d"), &block.Image.dp.rtSrc.left, &block.Image.dp.rtSrc.top, &block.Image.dp.rtSrc.right,
 		&block.Image.dp.rtSrc.bottom);
 }
 
-void CSonicString::Ctrl_animation(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_animation(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Link.nAlphaStep);
 	if(m_Link.nAlphaStep > 255 || m_Link.nAlphaStep < 0)
@@ -1305,44 +1463,43 @@ void CSonicString::Ctrl_animation(LPCTSTR szValue, STRING_BLOCK & block)
 	}
 }
 
-void CSonicString::Ctrl_align(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_align(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_nLineAlign);
 }
 
-void CSonicString::Ctrl_font(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.Font.Init();
 }
 
-void CSonicString::Ctrl_font_bold(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_bold(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &block.Font.bBold);
 }
 
-void CSonicString::Ctrl_font_height(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_height(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &block.Font.nHeight);
 }
 
-void CSonicString::Ctrl_font_italic(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_italic(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &block.Font.bItalic);
 }
 
-void CSonicString::Ctrl_font_strikeout(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_strikeout(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &block.Font.bStrikeOut);
 }
 
-void CSonicString::Ctrl_font_face(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_font_face(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	CString str = szValue;
-	str.Trim(_T('\''));
 	_stscanf(str, _T("%s"), &block.Font.szFaceName);
 }
 
-void CSonicString::Ctrl_sparkle(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_sparkle(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_Effect.dwMask |= STRING_EFFECT_SPARKLE;
 	m_Effect.sparkle.nSparkleInterval = 300;
@@ -1351,22 +1508,22 @@ void CSonicString::Ctrl_sparkle(LPCTSTR szValue, STRING_BLOCK & block)
 	m_Effect.sparkle.nSparkleColor[2] = RGB(0, 0, 255);
 }
 
-void CSonicString::Ctrl_sparkle_color(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_sparkle_color(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%x|%x|%x"), &m_Effect.sparkle.nSparkleColor[0], &m_Effect.sparkle.nSparkleColor[1], &m_Effect.sparkle.nSparkleColor[2]);
 }
 
-void CSonicString::Ctrl_sparkle_interval(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_sparkle_interval(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Effect.sparkle.nSparkleInterval);
 }
 
-void CSonicString::Ctrl_sparkle_timeout(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_sparkle_timeout(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Effect.sparkle.nSparkleTimeout);
 }
 
-void CSonicString::Ctrl_fadeout(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_fadeout(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_Effect.dwMask |= STRING_EFFECT_FADEOUT;
 	m_Effect.fadeout.nMaxAlpha = 255;
@@ -1375,7 +1532,7 @@ void CSonicString::Ctrl_fadeout(LPCTSTR szValue, STRING_BLOCK & block)
 	m_Effect.fadeout.nCurrAlpha = 255;
 }
 
-void CSonicString::Ctrl_fadeout_max(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_fadeout_max(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Effect.fadeout.nMaxAlpha );
 	if(m_Effect.fadeout.nMaxAlpha)
@@ -1384,7 +1541,7 @@ void CSonicString::Ctrl_fadeout_max(LPCTSTR szValue, STRING_BLOCK & block)
 	}
 }
 
-void CSonicString::Ctrl_fadeout_min(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_fadeout_min(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Effect.fadeout.nMinAlpha);
 	if(m_Effect.fadeout.nMinAlpha)
@@ -1393,7 +1550,7 @@ void CSonicString::Ctrl_fadeout_min(LPCTSTR szValue, STRING_BLOCK & block)
 	}
 }
 
-void CSonicString::Ctrl_fadeout_speed(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_fadeout_speed(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Effect.fadeout.nAlphaSpeed);
 	if(m_Effect.fadeout.nAlphaSpeed)
@@ -1420,22 +1577,22 @@ void CSonicString::ReleaseCapture()
 	}
 }
 
-void CSonicString::Ctrl_line_space(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_line_space(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_nLineSpace);
 }
 
-void CSonicString::Ctrl_global(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_global(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	block.nType |= BLOCK_TYPE_GLOBAL;
 }
 
-void CSonicString::Ctrl_pass_msg(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_pass_msg(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_Link.nPassMsg = TRUE;
 }
 
-void CSonicString::Ctrl_ani_num(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ani_num(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_Effect.dwMask |= STRING_EFFECT_ANI_NUM;
 	m_Effect.ani_num.nFrom = 0;
@@ -1444,17 +1601,17 @@ void CSonicString::Ctrl_ani_num(LPCTSTR szValue, STRING_BLOCK & block)
 	block.nType |= BLOCK_TYPE_ANI_NUM;
 }
 
-void CSonicString::Ctrl_ani_num_from(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ani_num_from(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Effect.ani_num.nFrom);
 }
 
-void CSonicString::Ctrl_ani_num_to(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ani_num_to(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Effect.ani_num.nTo);
 }
 
-void CSonicString::Ctrl_ani_num_frame(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_ani_num_frame(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	_stscanf(szValue, _T("%d"), &m_Effect.ani_num.nFrame);
 }
@@ -1545,17 +1702,17 @@ void CSonicString::OnTimerGif()
 		for(STRING_BLOCK_LIST::iterator it = m_BlockList.begin(); it != m_BlockList.end(); it++)
 		{
 			STRING_BLOCK &block = *it;
-			if((block.nType & BLOCK_TYPE_IMAGE) && block.Image.pNormal->GetFrameCount())
+			if((block.nType & BLOCK_TYPE_IMAGE) && block.Image.pImage[0]->GetFrameCount())
 			{
 				block.Image.nGifInterval += GIF_INTERVAL;
 				// divide 2 for loose of windows timer
-				if(((int)block.Image.pNormal->GetFrameDelay() >> 1) <= block.Image.nGifInterval)
+				if(((int)block.Image.pImage[0]->GetFrameDelay() >> 1) <= block.Image.nGifInterval)
 				{
 					// switch the frame
-					block.Image.pNormal->SetCurrentFrame();
+					block.Image.pImage[0]->SetCurrentFrame();
 					block.Image.nGifInterval = 0;
 					bRedraw = TRUE;
-					if(block.Image.pNormal->GetCurrentFrame() == 0)
+					if(block.Image.pImage[0]->GetCurrentFrame() == 0)
 					{
 						// one round
 						FireDelegate(DELEGATE_EVENT_GIF_OVER);
@@ -1720,7 +1877,7 @@ void CSonicString::RenderText(ISonicPaint * pPaint, LPVOID)
 	}
 }
 
-void CSonicString::Ctrl_init_normal(LPCTSTR szValue, STRING_BLOCK & block)
+void CSonicString::Ctrl_init_normal(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block)
 {
 	m_bInitNormal = TRUE;
 }
@@ -1736,4 +1893,26 @@ const RECT * CSonicString::GetRect()
 		return NULL;
 	}
 	return m_pOrigin->GetPaintRect();
+}
+
+void CSonicString::Enable(BOOL b /* = TRUE */)
+{
+	if(IsValid() == FALSE)
+	{
+		return;
+	}
+	if(m_bEnabled != b)
+	{
+		m_bEnabled = b;
+		ForceRedraw();
+	}
+}
+
+BOOL CSonicString::IsEnabled()
+{
+	if(IsValid() == FALSE)
+	{
+		return FALSE;
+	}
+	return m_bEnabled;
 }

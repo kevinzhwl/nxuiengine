@@ -170,13 +170,13 @@ void ISonicBaseData::OnDelegate(UINT message)
 	{
 		return;
 	}
-	LPVOID pReserve = pm.pReserve;
+	LPVOID pParam = pm.pParam;
 	LPVOID pClass = pm.pClass;
 	LPVOID pFunc = pm.pFunc;
 	__asm
 	{
 		push ecx
-		push [pReserve]
+		push [pParam]
 		push [pBase]
 		mov ecx, [pClass]
 		call [pFunc]

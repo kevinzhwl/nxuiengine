@@ -101,11 +101,14 @@ void CGifHandler::Clear()
 		pRawImg->Release();
 		pRawImg = NULL;
 	}
-	for(VEC_TFRAME::iterator it = vecFrame.begin(); it != vecFrame.end(); it++)
+	if(vecFrame.size() > 1)
 	{
-		if(it->pImg)
+		for(VEC_TFRAME::iterator it = vecFrame.begin(); it != vecFrame.end(); it++)
 		{
-			it->pImg->Release();
+			if(it->pImg)
+			{
+				it->pImg->Release();
+			}
 		}
 	}
 	vecFrame.clear();

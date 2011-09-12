@@ -15,6 +15,7 @@ using namespace sonic_ui;
 #define TIMER_TRANSFORM			0x10
 #define TIMER_SLIDE				0x20
 #define TIMER_TRACK_MOUSE		0x40
+#define TIMER_SHUTTER			0x80
 
 enum enEffectHelpType
 {
@@ -23,7 +24,11 @@ enum enEffectHelpType
 	EHT_TRANSFORM,
 	EHT_PREDRAG,
 	EHT_SLIDE,
+	EHT_SHUTTER,
 };
+
+#define DRAW_LAYER_ERASE		2
+#define DRAW_LAYER_NOERASE		1
 
 typedef list<HWND> WND_LIST;
 
@@ -93,6 +98,17 @@ public:
 		int nShowType;
 	}FADEOUT_PARAM;
 
+	typedef struct tagShutterParam
+	{
+		int nFrame;
+		BOOL bCross;
+		HWND hHelp;
+		ISonicImage * pMask;
+		ISonicImage * pOrigin;
+		CRect rtOld;
+		void Clear();
+	}SHUTTER_PARAM;
+
 	typedef struct tagWndEffect
 	{
 		DWORD	dwEffectMask;
@@ -107,6 +123,7 @@ public:
 		TRANSFORM_PARAM transform;
 		PRE_DRAG_PARAM predrag;
 		SLIDE_PARAM slide;
+		SHUTTER_PARAM shutter;
 	}WND_EFFECT;
 public:
 	CSonicWndEffect(void);
@@ -134,6 +151,8 @@ public:
 	virtual BOOL ConvertChildCtrl(HWND hChild, int nAttach = -1);
 	virtual DWORD GetWndEffectType();
 	virtual BOOL DirectTransform(int nAngle, RECT * pDest, int nFrame);
+	virtual BOOL Shutter(BOOL bCross = TRUE);
+	virtual BOOL IsAnimating();
 	
 	friend struct tagTransformParam;
 	static BOOL Init();
@@ -141,10 +160,9 @@ public:
 	void FinalEffect(HDC hdc);
 	void Redraw();
 	void UpdateLayer();
-	void UpdateDibLayer(int x, int y, int cx, int cy, int xSrc = 0, int ySrc = 0, BOOL bRedraw = TRUE);
-	void UpdateDibLayer(BOOL bRedraw = TRUE);
+	void UpdateDibLayer(int x, int y, int cx, int cy, int xSrc = 0, int ySrc = 0, BOOL bRedraw = DRAW_LAYER_ERASE);
+	void UpdateDibLayer(BOOL bRedraw = DRAW_LAYER_ERASE);
 	BOOL IsAlphaPerPixel() {return m_Dib.IsValid();}
-	CRect m_rtCache;
 
 protected:
 	WND_EFFECT m_Effect;
@@ -152,6 +170,8 @@ protected:
 
 	DWORD m_dwOldExStyle;	
 	int m_nKeyColor;
+	BYTE m_bAlpha;
+	BYTE m_bDelayShowSwitch;
 	ISonicImage * m_pBg;
 	CDibMgr m_Dib;	
 	SIZE m_szSrc;	
@@ -165,12 +185,13 @@ protected:
 	void OnTimerFrame();
 	void OnTimerTransform();
 	void OnTimerTrackMouse();
+	void OnTimerShutter();
 	void OnMouseEnter();
 	void OnMouseLeave();
 	void EndShowTimer();
-	void DrawLayer();
+	void DrawLayer(BOOL bErase = TRUE);
 	void PrepareLayer(int cx, int cy);
-	BOOL OnPosChange(LPWINDOWPOS pPos);
+	BOOL OnPosChanging(LPWINDOWPOS pPos);
 	BOOL OnPosChanged(LPWINDOWPOS pPos);
 	void OnInternalTimer(DWORD dwTimerId);
 	void ModifyChild(HWND hWnd);
@@ -179,6 +200,7 @@ protected:
 	BOOL OnFrameMsg(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	BOOL OnTransformMsg(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	BOOL OnPreDragMsg(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	BOOL OnShutterMsg(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	HWND CreateEffectHelpWnd(enEffectHelpType eht, DWORD dwStyle);
 	void RestoreTransform();	
 	void Transform();

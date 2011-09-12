@@ -35,13 +35,17 @@ IDI_SMALL               ICON                    "small.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
-// Image
+// IMAGE
 //
-BMP_NORMAL				IMAGE					"Res\\normal.bmp"
-BMP_HOVER				IMAGE					"Res\\hover.bmp"
-BMP_CLICK				IMAGE					"Res\\click.bmp"
-GIF_TEST1				IMAGE					"Res\\1.gif"
-PNG_BG					IMAGE					"Res\\bg.png"
+
+BMP_NORMAL              IMAGE                   "Res\\normal.bmp"
+BMP_HOVER               IMAGE                   "Res\\hover.bmp"
+BMP_CLICK               IMAGE                   "Res\\click.bmp"
+GIF_TEST1               IMAGE                   "Res\\1.gif"
+PNG_BG                  IMAGE                   "Res\\bg.png"
+PNG_BUTTON              IMAGE                   "Res\\Button_01.png"
+PNG_DLG_BG              IMAGE                   "Res\\dlg.png"
+PNG_CLOSE               IMAGE                   "Res\\close.png"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -83,11 +87,22 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
 CAPTION "关于"
 FONT 9, "宋体", 400, 0, 0x86
 BEGIN
-    ICON            IDI_SONICUIDEMO,IDC_MYICON,14,9,21,21
+    ICON            IDI_SONICUIDEMO,IDC_MYICON,14,9,20,20
     LTEXT           "SonicUIDemo Version 1.0",IDC_STATIC,49,10,119,8,
                     SS_NOPREFIX
     LTEXT           "Copyright (C) 2008  zskof",IDC_STATIC,49,20,119,8
     DEFPUSHBUTTON   "确定",IDOK,195,6,30,11,WS_GROUP
+END
+
+IDD_DIALOG1 DIALOGEX 0, 0, 206, 258
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_POPUP | WS_CLIPSIBLINGS | 
+    WS_CLIPCHILDREN | WS_SYSMENU | WS_THICKFRAME | WS_MAXIMIZEBOX | WS_MINIMIZEBOX
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "确定",IDOK,7,237,50,14
+    PUSHBUTTON      "取消",IDCANCEL,149,237,50,14
+    CONTROL         "用SonicUI节省开发时间",IDC_CHECK1,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,21,65,148,11
 END
 
 
@@ -116,6 +131,25 @@ BEGIN
     "\0"
 END
 
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 199
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 251
+    END
+END
 #endif    // APSTUDIO_INVOKED
 
 

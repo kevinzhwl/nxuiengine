@@ -5,6 +5,7 @@ using namespace sonic_ui;
 #include "SimpleToolTip.h"
 #include "ISonicBaseData.h"
 
+
 // wParam:CSonicString *
 // HIWORD(lParam):EVENT
 // LOWORD(lParam):SysParam
@@ -29,13 +30,6 @@ using namespace sonic_ui;
 
 typedef list<ISonicBase *>  LIST_SONIC_BASE;
 
-typedef struct tagRedrawItem
-{
-	ISonicPaint * pPaint;
-	RECT rt;
-}REDRAW_ITEM;
-typedef list<REDRAW_ITEM> LIST_REDRAW_ITEM;
-
 enum enMouseStatus
 {
 	msNormal = 0,
@@ -45,7 +39,6 @@ enum enMouseStatus
 
 typedef struct tagHwndData
 {
-	LIST_REDRAW_ITEM RedrawList;
 	LIST_SONIC_BASE BaseList;
 	WNDPROC	pOldProc;
 	int nMouseStatus;
@@ -61,6 +54,7 @@ class CSonicUI : public ISonicUI
 public:
 	CSonicUI();
 	virtual ~CSonicUI();
+	virtual ISonicSkin* CreateSkin();
 	virtual ISonicImage * CreateImage();
 	virtual ISonicWndEffect * CreateWndEffect();
 	virtual ISonicString * CreateString();
@@ -78,7 +72,11 @@ public:
 	virtual BOOL ClearTip(ISonicBase * pBase);
 	virtual BOOL CreateTip();
 	virtual ISonicWndEffect * EffectFromHwnd(HWND hWnd);
+	virtual ISonicSkin * SkinFromHwnd(HWND hWnd);
 	virtual LPCTSTR HandleRawString(LPCTSTR lpszStr, int nType, LPCTSTR lpszUrlAttr = NULL);
+	virtual BOOL DrawWindow(HDC hdc, HWND hWnd, BOOL bRecursion = TRUE);
+	virtual HFONT GetDefaultFont();
+	virtual BOOL DrawText(HDC hDC, int x, int y, LPCTSTR lpszString, DWORD dwColor = 0, HFONT hFont = NULL);
 
 	BOOL RectInRect(LPRECT pRect1, LPRECT pRect2);
 	BOOL IsCursorInWnd(HWND hWnd);
@@ -88,9 +86,7 @@ public:
 	ISonicBase * GetCapture();
 	BOOL Redraw(ISonicPaint * pPaint, RECT * pRt = NULL, BOOL bErase = TRUE);
 
-	static CRect m_rtUpdate;
-	static BOOL m_bErase;
-	static BOOL m_bPainting;
+	CRect m_rtUpdate;
 	static HWND m_hWnd;
 	static LRESULT CALLBACK InternalWndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 	static HWND_DATA * DataFromHwnd(HWND hWnd);
@@ -118,10 +114,6 @@ protected:
 	static LPVOID m_pOldBeginPaint;
 	static LPVOID m_pOldEndPaint;
 	static HDC m_hPaintDC;
-	static BOOL CALLBACK MyGetWindowRect(HWND hWnd, LPRECT lpRect);
-	static BOOL CALLBACK MyGetClientRect(HWND hWnd, LPRECT lpRect);
-	static LPVOID m_pOldGetWindowRect;
-	static LPVOID m_pOldGetClientRect;
 };
 
 extern CSonicUI g_UI;

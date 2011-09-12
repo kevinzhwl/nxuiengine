@@ -63,6 +63,9 @@ protected:
 		int			nBtnType;		// 是否构造为checkbox型的按钮
 		BOOL		bCheck;			// checkbox型按钮用
 		CString		strLink;		// 超链接URL
+		CString		strBtnText;		// 按钮上的文字
+		int			nBtnWidth;		// 强制按钮长度
+		int			nBtnHeight;		// 强制按钮的高度
 		int			nLinkCount;		// 本串的链接个数
 		int			nAlphaStep;		// 动态按钮使用，如果不为0，则标志此为动态按钮
 		int			nCurrAlpha;		// 动态按钮使用
@@ -78,7 +81,10 @@ protected:
 			nBtnType = 0;	
 			bCheck = FALSE;
 			strLink.Empty();
+			strBtnText.Empty();
 			nPassMsg = FALSE;
+			nBtnWidth = 0;
+			nBtnHeight = 0;
 		}
 		tagLinkInfo()
 		{
@@ -135,9 +141,8 @@ protected:
 
 	typedef struct tagImageInfo
 	{
-		ISonicImage *	pNormal;	// 正常时的图片，不为0时IMAGE_INFO有效
-		ISonicImage *	pHover;		// 悬浮时的图片
-		ISonicImage *	pClick;		// 点击时的图片
+		int nImageStateNum;			// 图片态数，[0, 4]，0表示没有图片
+		ISonicImage *	pImage[4];	// 最多四张
 		DRAW_PARAM	dp;				// 绘制参数
 		int	nGifInterval;			// 控制换帧用
 	}IMAGE_INFO;
@@ -211,18 +216,22 @@ public:
 	virtual int GetWidth();
 	virtual BOOL AnimateGif(BOOL bBegin = TRUE);
 	virtual LPCTSTR GetStr();
+	virtual LPCTSTR GetTextWithoutCtrl();
 	virtual void ShowString(BOOL bShow = TRUE, BOOL bRedraw = TRUE);
 	virtual BOOL IsVisible();
 	virtual BOOL AnimateFadeout(BOOL b = TRUE);
 	virtual BOOL AnimateSparkle(BOOL b = TRUE);
 	virtual BOOL AnimateAniNum(BOOL b = TRUE);
 	virtual BOOL Detach();
-	virtual void Redraw();
+	virtual void Redraw(BOOL bEraseBackground = TRUE);
 	virtual const RECT * GetRect();
+	virtual void Enable(BOOL b = TRUE);
+	virtual BOOL IsEnabled();
 
 public:
 	static BOOL Init();
 	static HFONT GetDefSonicFont();
+	static BOOL DrawText(HDC hDC, int x, int y, LPCTSTR lpszString, DWORD dwColor = 0, HFONT hFont = NULL);
 	static BOOL MessageFilter(CSonicString * pStr, UINT message, WPARAM wParam, LPARAM lParam);
 
 protected:
@@ -240,7 +249,7 @@ protected:
 	BOOL OnRButtonUp(WPARAM wParam, LPARAM lParam);
 	BOOL OnRButtonDblClick(WPARAM wParam, LPARAM lParam);
 	BOOL OnMouseWheel(WPARAM wParam, LPARAM lParam);
-	BOOL ForceRedraw(BOOL bErase = FALSE);
+	BOOL ForceRedraw();
 	void ChangeStatus(int nStatus);
 	void OnClickLink(ISonicString * pStr, DWORD dwReserve);
 	void OnInternalTimer(DWORD dwTimerId);
@@ -262,53 +271,50 @@ protected:
 	void RenderText(ISonicPaint * pPaint, LPVOID);
 	void InitValue();
 private:
-	void Ctrl_a(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_def(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_c(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_linkl(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_linkc(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_linkt(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_linkh(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_ph(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_p(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_pc(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_key(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_btn_type(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_pClip(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_line_width(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_single_line(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_align(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_animation(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_br_offset(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_font(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_font_height(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_font_bold(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_font_italic(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_font_strikeout(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_font_face(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_sparkle(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_sparkle_color(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_sparkle_interval(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_sparkle_timeout(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_fadeout(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_fadeout_max(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_fadeout_min(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_fadeout_speed(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_line_space(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_global(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_pass_msg(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_ani_num(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_ani_num_from(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_ani_num_to(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_ani_num_frame(LPCTSTR szValue, STRING_BLOCK & block);
-	void Ctrl_init_normal(LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_a(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_def(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_c(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_linkl(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_linkc(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_linkt(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_linkh(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_p(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_key(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_btn_type(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_btn_text(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_btn_width(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_btn_height(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_pClip(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_line_width(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_single_line(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_align(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_animation(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_br_offset(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_font(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_font_height(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_font_bold(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_font_italic(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_font_strikeout(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_font_face(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_sparkle(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_sparkle_color(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_sparkle_interval(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_sparkle_timeout(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_fadeout(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_fadeout_max(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_fadeout_min(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_fadeout_speed(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_line_space(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_global(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_pass_msg(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_ani_num(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_ani_num_from(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_ani_num_to(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_ani_num_frame(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
+	void Ctrl_init_normal(LPCTSTR szKey, LPCTSTR szValue, STRING_BLOCK & block);
 
-	typedef void (CSonicString::* FUNC_CTRL)(LPCTSTR, STRING_BLOCK &);
-#if(defined UNICODE || defined _UINCODE)
-	typedef map<wstring, FUNC_CTRL> MAP_STR_TO_FUNC;
-#else
-	typedef map<string, FUNC_CTRL> MAP_STR_TO_FUNC;
-#endif
+	typedef void (CSonicString::* FUNC_CTRL)(LPCTSTR, LPCTSTR, STRING_BLOCK &);
+	typedef map<CString, FUNC_CTRL> MAP_STR_TO_FUNC;
 	static MAP_STR_TO_FUNC m_mapFunc;
 protected:
 	CString	m_strTip;		// 鼠标hover时的tip
@@ -319,6 +325,7 @@ protected:
 	STRING_EFFECT	m_Effect;	// 字串特效
 	STRING_BLOCK	m_GlobalBlock;
 
+	BOOL m_bEnabled;
 	BOOL m_bInitNormal;
 	int m_nCapture;
 	int m_nLineAlign;		// 0行上对齐，1行中对齐，2行下对齐

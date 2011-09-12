@@ -4,7 +4,7 @@ typedef struct tagDelegateParam
 {
 	LPVOID pClass;
 	LPVOID pFunc;
-	LPVOID pReserve;
+	LPVOID pParam;
 }DELEGATE_PARAM;
 typedef map<UINT, DELEGATE_PARAM> MSG_TO_DELEGATE_PARAM;
 

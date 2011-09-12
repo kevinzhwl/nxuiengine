@@ -1,27 +1,31 @@
 #pragma once
+
+
 #ifdef SONICUI_EXPORTS
 #define SONICUI_API _declspec(dllexport)
 #else
-#define SONICUI_API	_declspec(dllimport)
+#define SONICUI_API
 #endif
 
+
 #define ARGB(a, r, g, b) ((a) << 24 | (r) << 16 | (g) << 8 | (b))
+#define CONVERT_RGB(rgb) ((rgb) >> 16 & 0xff | (rgb) << 16 & 0xff0000 | (rgb) & 0xff00)
 #define DEFAULT_COLOR_KEY	RGB(128, 128, 128)
+#define SONICUI_DESTROY(pBase) if(pBase){ GetSonicUI()->DestroyObject(pBase); pBase = NULL; }
 
 //////////////////////////////////////////////////////////////////////////
 //					SonicUI GUI engine
 //
 //	Author:			Sonic Guan
-//	Date:			2008-12-8
-//	Version:		v1.0
+//	Date:			2010-05-17
+//	Version:		v1.1
 //	Introduction:	This is a GUI engine based on the nake gdi APIs.It offers several UI components to
 //					accomplish kinds of complex effects, such as irregular windows, URLs on windows, self-draw
 //					buttons, animaiton and image operation methods, etc. The main purpose is to use the least
 //					code to achieve the best effect and efficiency so you can release yourself from repeated 
 //					and flavourless UI work, and concentrate on the more meaning part.
 //	Statement:		You can use this code freely, and modify or add components at your pleasure, but please don't 
-//					erase this statement. And if you would like to share your modified copy with me 
-//					will be highly appreciated.
+//					erase this statement. Sharing your modified copy with me would be highly appreciated.
 //					It's not allowed to use for merchant purpose without contact with author.
 //////////////////////////////////////////////////////////////////////////
 
@@ -46,6 +50,8 @@ namespace sonic_ui
 		DELEGATE_EVENT_TRANSFORM_OVER,	// after transform
 		DELEGATE_EVENT_ANI_NUM_OVER,	// after a number animation 
 		DELEGATE_EVENT_PAINT,			// delegate a procedure to this event of ISonicPaint, which will be called while the Paint is drawing
+		DELEGATE_EVENT_SLIDE_OVER,		// after slide
+		DELEGATE_EVENT_SHUTTER_OVER,	// after shutter animation
 	};
 
 	// Optional Draw Param Mask used by ISonicImage::Draw
@@ -56,7 +62,9 @@ namespace sonic_ui
 		DP_SRC_CLIP		= 0x2,	// source clip
 		DP_SCALE		= 0x4,	// scale
 		DP_DEST_LIMIT	= 0x8,	// auto scale to fit the destination region
-		DP_COLOR_KEY	= 0x10,	// color key, cannot be used with DP_ALPHA
+		DP_COLOR_KEY	= 0x10,	// color key, cannot be combined with DP_ALPHA
+		DP_TILE			= 0x20,	// tile draw. image will be seperated into 3 partes(left, mid, right), use nTileDivider in DRAW_PARAM to decide the width of edge(imageWidth / nTileDivider)
+		DP_VER_TILE		= 0x40,	// vertically tile, cannot be combined with DP_TILE. image will be seperated into 3 partes(top, mid, bottom), use nTileDivider in DRAW_PARAM to decide the width of edge(imageWidth / nTileDivider)
 	};
 
 	// Components type
@@ -69,6 +77,7 @@ namespace sonic_ui
 		BASE_TYPE_TEXT_SCROLL_BAR,	// ISonicTextScrollBar
 		BASE_TYPE_PAINT,			// ISonicPaint
 		BASE_TYPE_ANIMATION,		// ISonicAnimation
+		BASE_TYPE_SKIN,				// ISonicSkin
 		BASE_TYPE_END,
 	};
 
@@ -124,13 +133,15 @@ namespace sonic_ui
 	// Optional Draw Param Mask used by ISonicImage::Draw
 	typedef struct tagDrawParam
 	{
-		DWORD dwMask;			// mask
+		DWORD dwMask;			// maskstruct 
 		float fScaleX;			// width scale rate
-		float fScaleY;			// height scale rate
-		unsigned char cAlpha;	// transparent rate
-		RECT rtSrc;				// source region clip
+		float fScaleY;			// height scale rate	
 		int cx;					// destination region width
 		int cy;					// destination region height
+		int nTileLength;		// tile width or height
+		int nTileDivider;		// horizontally divide the orignal width into n blocks and make the width of a block as the width of left and right edges
+		unsigned char cAlpha;	// transparent rate
+		RECT rtSrc;				// source region clip
 		DWORD dwColorKey;		// color key
 	}DRAW_PARAM;
 
@@ -181,10 +192,12 @@ namespace sonic_ui
 		// 'pReserve' stands for a delegated data used by callback function
 		// 'pClass' is used only when the delegated proc is a member function of a class
 		// the last param is the delegated proc. here use the volatile parameter trick to avoid C++ compliling check when the proc is a member function
+		//////////////////////////////////////////////////////////////////////////
 		// notice: delegated proc can be only declared as following style:
 		// void WINAPI Func(ISonicBase *, LPVOID pReserve);
+		//////////////////////////////////////////////////////////////////////////
 		// the ISonicBase * is a pointer to the object which was delegated previously
-		virtual void Delegate(UINT message, LPVOID pReserve, LPVOID pClass, ...);
+		virtual void Delegate(UINT message, LPVOID pParam, LPVOID pClass, ...);
 
 		// get handle of window which was attached by this object
 		virtual HWND GetSafeHwnd();
@@ -249,7 +262,7 @@ namespace sonic_ui
 	// interface:	ISonicImage
 	// function:	image operation interface.Loading and saving procedure depends on CxImage lib internally. Supports bmp, jpeg, png, tga, gif, ico.
 	//				Supports rotation, scale and hsl adjustment, etc.
-	// comment:		ISonicImage does not response to windows message so it cannot be delegated.
+	// remarks:		ISonicImage does not response to windows message so it cannot be delegated.
 	//////////////////////////////////////////////////////////////////////////
 	class ISonicImage : public ISonicBase
 	{
@@ -275,6 +288,9 @@ namespace sonic_ui
 
 		// fill the alpha channel with 0
 		virtual BOOL DestroyAlphaChannel() = 0;
+
+		// set alpha channel with specified value
+		virtual BOOL SetAlphaChannel(BYTE bAlpha) = 0;
 		
 		// draw to hdc with optional params
 		virtual BOOL Draw(HDC hdc, int x = 0, int y = 0, DRAW_PARAM * pParam = NULL) = 0;
@@ -313,8 +329,11 @@ namespace sonic_ui
 		// save as file, imgType is between 0 and 100, only available when imgType is IMAGE_TYPE_JPEG
 		virtual BOOL SaveAsFile(LPCTSTR lpszFileName, enImageType imgType, int nQuality = 0) = 0;
 
-		// make a rgn with specified color key. remember to destroy the rgn object when not be used
-		virtual HRGN CreateRgn(DWORD dwColorKey = DEFAULT_COLOR_KEY) = 0;
+		// make a rgn with specified color key. remember to destroy the rgn object when not used
+		// x, y presents the destination left and top coordinates in CreateRectRgn
+		// pRtSrc: uses the source clip to make rgn
+		// bReverse: if set to TRUE, rgn equals to color key region, otherwise color key as tranparent region
+		virtual HRGN CreateRgn(DWORD dwColorKey = DEFAULT_COLOR_KEY, int x = 0, int y = 0, RECT * pRtSrc = NULL, BOOL bReverse = FALSE) = 0;
 
 		// if alpha channel is valid
 		virtual BOOL IsAlphaChannelValid() = 0;
@@ -386,7 +405,7 @@ namespace sonic_ui
 		virtual BOOL Restore() = 0;
 
 		// redraw
-		virtual BOOL Redraw() = 0;
+		virtual BOOL Redraw(BOOL bEraseBackground = TRUE) = 0;
 
 		// get width
 		virtual int GetWidth() = 0;
@@ -432,6 +451,9 @@ namespace sonic_ui
 
 		// copy from
 		virtual BOOL CloneFrom(const ISonicPaint *) = 0;
+
+		// turn on/off auto background backup mechanism when drawing
+		virtual BOOL EnableDrawingBackup(BOOL b) = 0;
 	};
 
 	//////////////////////////////////////////////////////////////////////////
@@ -532,6 +554,12 @@ namespace sonic_ui
 
 		// get current effect type with enum enWndEffectMask
 		virtual DWORD GetWndEffectType() = 0;
+
+		// shutter alike
+		virtual BOOL Shutter(BOOL bCross = TRUE) = 0;
+
+		// is doing animation, including shutter, transformation, slide, fadeout
+		virtual BOOL IsAnimating() = 0;
 	};
 
 	//////////////////////////////////////////////////////////////////////////
@@ -564,10 +592,19 @@ namespace sonic_ui
 	//			p		usage:	display a image, auto switch frame if a gif is set. set a ISonicImage object id to it 
 	//					exp:	Format("/p=%d//c=0xff/你好啊", pImg->GetObjectId());
 	//
-	//			ph		usage:	only available with 'p' keyword. image displayed when hover
-	//			pc		usage:	only available with 'p' keyword. image displayed when click
-	//					exp:	Format("/a, p=%d, ph=%d, pc=%d/", pNormal->GetObjectId(), pHover->GetObjectId(), pClick->GetObjectId());
-	//					remark:	if the source image tiles the three status, appoint p, ph, pc the same object id. auto source clip will be made internally
+	//			p%d		usage:	only available with 'a' keywords. make a %d-state button, %d can be 2, 3, 4, you can assign %d different pictures or one picture as 
+	//							param to p%d, and if only one picture is assigned, the picture would be split into %d pieces internally
+	//					exp:	/a, p3=%d|%d|%d/, pNormal->GetObjectId(), pHover->GetObjectId(), pClick->GetObjectId()
+	//							/a, p3=%d/pButton->GetObjectId()
+	//
+	//		btn_text	usage:	only available with 'a', 'p', and 'p%d' keywords. output text on the button, if the length of text exceeds the suitable length of the button,
+	//							auto button length extention would be made internally
+	//					exp:	/a, p3=%d, btn_text='确定'/pButton->GetObjectId()
+	//
+	//		btn_width	usage:	only available with 'a', 'p', and 'p%d' keywords. force button width to the specified value.
+	//					exp:	/a, p3=%d, btn_width=40/pButton->GetObjectId()
+	//		btn_height	usage:	only available with 'a', 'p', and 'p%d' keywords. force button height to the specified value.
+	//					exp:	/a, p3=%d, btn_height=30/pButton->GetObjectId()
 	//
 	//		animation	usage:	only available with 'a', 'p', 'ph' and 'pc' keywords. make a animation button with specified speed
 	//					exp:	Format("/a, p=%d, ph=%d, pc=%d, animation=30/", pNormal->GetObjectId(), pHover->GetObjectId(), pClick->GetObjectId());
@@ -656,6 +693,9 @@ namespace sonic_ui
 		// get raw string
 		virtual LPCTSTR GetStr() = 0;
 
+		// get text without control charactors
+		virtual LPCTSTR GetTextWithoutCtrl() = 0;
+
 		// show or hide string
 		virtual void ShowString(BOOL bShow = TRUE, BOOL bRedraw = TRUE) = 0;
 
@@ -663,7 +703,7 @@ namespace sonic_ui
 		virtual BOOL IsVisible() = 0;
 
 		// redraw
-		virtual void Redraw() = 0;
+		virtual void Redraw(BOOL bEraseBackground = TRUE) = 0;
 
 		// turn on/off fadeout animation
 		virtual BOOL AnimateFadeout(BOOL b = TRUE) = 0;
@@ -673,12 +713,18 @@ namespace sonic_ui
 
 		// get current rendering region
 		virtual const RECT * GetRect() = 0;
+
+		// if disabled, all mouse message will be skiped. if asigned with 4-state picture and act as a button, set disabled attribute to show disabled button state
+		virtual void Enable(BOOL b = TRUE) = 0;
+
+		// is enabled
+		virtual BOOL IsEnabled() = 0;
 	};
 
 	//////////////////////////////////////////////////////////////////////////
 	// interface:	ISonicTextScrollBar
 	// function:	Text strcoll bar control, used for scroll text or images
-	// comments:	text strcoll bar is not a real window
+	// remarks:	text strcoll bar is not a real window
 	//////////////////////////////////////////////////////////////////////////
 	class ISonicTextScrollBar : public ISonicBase, public ISonicBaseCtrl
 	{
@@ -709,6 +755,65 @@ namespace sonic_ui
 
 		// show/hide scroll bar
 		virtual BOOL ShowScroll(BOOL b, BOOL bRedraw = TRUE) = 0;
+
+		//set color of scroll bar
+		virtual BOOL SetBGColor(DWORD dwColor) = 0;
+	};
+
+	//////////////////////////////////////////////////////////////////////////
+	// interface:	ISonicSkin
+	// function:	subclass mechanism to change skin
+	// remarks:		while formating lpszValue, use colon to set value and semicolon to seperate different values
+	//				it's highly recommended that attach ISonicSkin a window before it's visible for more smooth UI sense.
+	//				it's free to attach ISonicSkin to normal windows with kinds of style, but when face to dialog, you should 
+	//				modify dialog style in the template editor. style modification after dialogs are created will cause weird
+	//				action, especially in modal dialogs. for example, if modify style to WS_MINIMIZE or WS_SIZEBOX within WM_INITDIALOG
+	//				process, modification could be confirmed with spy++ but the new style will not function at all.
+	//				so, if attach ISonicSkin to a dialog, you should prepare a none-border dialog with the template editor. if more optional
+	//				styles wanted, you will have to edit the .rc file manually
+	//////////////////////////////////////////////////////////////////////////
+	class ISonicSkin : public ISonicBase
+	{
+	public:
+		// make sure pImg passed in is valid while working time
+		// skin type description:
+		//////////////////////////////////////////////////////////////////////////
+		// Skin Name: bg
+		// Description: background render
+		// Value:	image: specify background image
+		//			top_height:	top region will not be tiled vertically whiling rendering background
+		//			title_height: specify the title area in the background image, if not specified, auto judged internally
+		//			title_text:	specify the title text, if not specified
+		//			enable_drag: set to false to disable window drag, default to TRUE
+		//			color_key: specify the transparent color to make window rgn	
+		//			close: system close button, 4-state tile image
+		//			min: system minimize button, 4-state tile image
+		//			max: system maximize button, 4-state tile image
+		//			restore: system restore buttn, 4-state tile image
+		//			icon: system icon, image
+		//			btn_space: width between system buttons
+		//			btn_top_margin: top margin of system buttons
+		//			btn_right_margin: right margin of system buttons
+		//////////////////////////////////////////////////////////////////////////
+		// Skin Name: button
+		// Description: self draw button, change the standard button skin
+		// Value:	image: specify button image, 4-state tiled
+		//			text_ctrl: specify text color and font, refer to ISonicString syntax, '/' is not needed
+		//			btn_ctrl: specify button attributes, such as animation button, cursor while hovering, etc. refer to ISonicString syntax, '/' is not needed
+		//////////////////////////////////////////////////////////////////////////
+		// Exp:		SetSkin("bg", "image:%d;title_height:1;close:%d", pBG->GetObjectId(), pClose->GetObjectId());
+		//////////////////////////////////////////////////////////////////////////
+		virtual BOOL SetSkin(LPCTSTR lpszSkinName, LPCTSTR lpszValue, ...) = 0;
+
+		// window skin would be changed after attaching
+		// bLayered: if set to TRUE, use layered window to implement shaped window, otherwise use window rgn
+		virtual BOOL Attach(HWND hWnd) = 0;
+
+		// get paint of ISonicSkin
+		// you can assign a callback function to the paint retreived, which will be called just after the background has been rendered
+		// another advantage of this mechanism is that ficker can be avoided because memory dc is used when render the background
+		// exp: pSonicSkin->GetPaint()->Delegate(DELEGATE_EVENT_PAINT, NULL, NULL, DrawCallback);
+		virtual ISonicPaint * GetPaint() = 0;
 	};
 
 	//////////////////////////////////////////////////////////////////////////
@@ -718,6 +823,9 @@ namespace sonic_ui
 	class ISonicUI
 	{
 	public:
+		// create ISonicSkin
+		virtual ISonicSkin * CreateSkin() = 0;
+
 		// create ISonicImage
 		virtual ISonicImage * CreateImage() = 0;
 
@@ -745,6 +853,9 @@ namespace sonic_ui
 		// get a ISonicWndEffect from a specified window
 		virtual ISonicWndEffect * EffectFromHwnd(HWND hWnd) = 0;
 
+		// get a ISonicSkin from a specified window
+		virtual ISonicSkin * SkinFromHwnd(HWND hWnd) = 0;
+
 		// handle raw strings to avoid keywords confict
 		virtual LPCTSTR HandleRawString(LPCTSTR lpszStr, int nType, LPCTSTR lpszUrlAttr = NULL) = 0;
 
@@ -753,6 +864,16 @@ namespace sonic_ui
 
 		// create a ISonicAnimation
 		virtual ISonicAnimation * CreateAnimation() = 0;
+
+		// return a default HFONT with following style:font-family:宋体，font-size:12
+		// !!!Don't delete the handle returned!!!
+		virtual HFONT GetDefaultFont() = 0;
+
+		// simple draw text
+		virtual BOOL DrawText(HDC hDC, int x, int y, LPCTSTR lpszString, DWORD dwColor = 0, HFONT hFont = NULL) = 0;
+
+		// draw a snapshot of window to the specified hdc
+		virtual BOOL DrawWindow(HDC hdc, HWND hWnd, BOOL bRecursion = TRUE) = 0;
 
 	protected:
 		virtual const DWORD * GetObjectTypePtr(const ISonicBase *);

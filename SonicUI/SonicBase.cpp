@@ -25,7 +25,7 @@ DWORD ISonicBase::GetType()
 	return m_dwType;
 }
 
-void ISonicBase::Delegate(UINT message, LPVOID pReserve, LPVOID pClass, ...)
+void ISonicBase::Delegate(UINT message, LPVOID pParam, LPVOID pClass, ...)
 {
 	if(IsValid() == FALSE)
 	{
@@ -38,7 +38,7 @@ void ISonicBase::Delegate(UINT message, LPVOID pReserve, LPVOID pClass, ...)
 	}
 	DELEGATE_PARAM pm = {0};
 	pm.pClass = pClass;
-	pm.pReserve = pReserve;
+	pm.pParam = pParam;
 	va_list argPtr;
 	va_start(argPtr, pClass);
 	pm.pFunc = va_arg(argPtr, LPVOID);

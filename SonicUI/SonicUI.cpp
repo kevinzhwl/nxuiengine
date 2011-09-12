@@ -11,6 +11,8 @@
 #include "InjectTool.h"
 #include "SonicPaint.h"
 #include "SonicAnimation.h"
+#include "SonicSkin.h"
+
 
 // #ifdef _DEBUG
 // #pragma comment(lib, "cximageD.lib")
@@ -55,16 +57,13 @@ HINSTANCE g_hDll;
 HWND CSonicUI::m_hWnd = NULL;
 HWND_TO_DATA CSonicUI::m_mapHwndToData;
 LIST_SONIC_BASE CSonicUI::m_CreatedList;
-CRect CSonicUI::m_rtUpdate;
-BOOL CSonicUI::m_bErase = FALSE;
-BOOL CSonicUI::m_bPainting = FALSE;
 int CSonicUI::m_nRet = 0;
 
-const char g_ErrorInfo[][256] = {
-	"没有错误",
-	"未知错误",
-	"错误的字符串语法",
-	"无效的组件对象Id",
+const TCHAR g_ErrorInfo[][256] = {
+	_T("没有错误"),
+	_T("未知错误"),
+	_T("错误的字符串语法"),
+	_T("无效的组件对象Id"),
 };
 
 ISonicUI * GetSonicUI()
@@ -88,6 +87,10 @@ ISonicUI * GetSonicUI()
 				__leave;
 			}
 			if(CSonicString::Init() == FALSE)
+			{
+				__leave;
+			}
+			if(CSonicSkin::Init() == FALSE)
 			{
 				__leave;
 			}
@@ -124,8 +127,6 @@ const DWORD * ISonicUI::GetObjectTypePtr(const ISonicBase * pBase)
 
 LPVOID CSonicUI::m_pOldBeginPaint = NULL;
 LPVOID CSonicUI::m_pOldEndPaint = NULL;
-LPVOID CSonicUI::m_pOldGetWindowRect = NULL;
-LPVOID CSonicUI::m_pOldGetClientRect = NULL;
 HDC CSonicUI::m_hPaintDC = NULL;
 
 CSonicUI::CSonicUI()
@@ -186,6 +187,12 @@ ISonicImage * CSonicUI::CreateImage()
 {
 	m_CreatedList.push_back(new CSonicImage);
 	return (ISonicImage *)m_CreatedList.back();
+}
+
+ISonicSkin * CSonicUI::CreateSkin()
+{
+	m_CreatedList.push_back(new CSonicSkin);
+	return (ISonicSkin *)m_CreatedList.back();
 }
 
 ISonicWndEffect * CSonicUI::CreateWndEffect()
@@ -279,20 +286,28 @@ BOOL CSonicUI::Attach(HWND hWnd, ISonicBase * pBase)
 		{
 			return FALSE;
 		}
-	}
-	if(*GetObjectTypePtr(pBase) == BASE_TYPE_WND_EFFECT)
-	{
-		if(pData->BaseList.size() && *GetObjectTypePtr(pData->BaseList.back()) == BASE_TYPE_WND_EFFECT)
+		if((*it)->GetType() == pBase->GetType())
 		{
-			return FALSE;
+			switch(pBase->GetType())
+			{
+			case BASE_TYPE_WND_EFFECT:
+			case BASE_TYPE_SKIN:
+				return FALSE;
+			}
 		}
-		pData->BaseList.push_back(pBase);
-	}
-	else
-	{
-		pData->BaseList.push_front(pBase);
 	}
 
+	// this order assure ISonicString keep higher priority to message
+	switch(pBase->GetType())
+	{
+	case BASE_TYPE_WND_EFFECT:
+	case BASE_TYPE_SKIN:
+		pData->BaseList.push_back(pBase);
+		break;
+	default:
+		pData->BaseList.push_front(pBase);
+		break;
+	}
 	return TRUE;
 }
 
@@ -343,7 +358,13 @@ LRESULT CALLBACK CSonicUI::SonicWndProc(HWND hWnd, UINT message, WPARAM wParam, 
 		break;
 	case WM_ERASEBKGND:
 		{
-			m_bErase = TRUE;
+			GetClipBox((HDC)wParam, g_UI.m_rtUpdate);
+		}
+		break;
+	case WM_DRAWITEM:
+		{
+			LPDRAWITEMSTRUCT pDI = (LPDRAWITEMSTRUCT)lParam;
+			GetClipBox(pDI->hDC, g_UI.m_rtUpdate);
 		}
 		break;
 	case WM_NCDESTROY:
@@ -371,20 +392,24 @@ LRESULT CALLBACK CSonicUI::SonicWndProc(HWND hWnd, UINT message, WPARAM wParam, 
 			{
 				// last block
 				CSonicWndEffect * pEffect = (CSonicWndEffect *)pBase;
-				if(bRet)
-				{
-					bRet &= pEffect->OnWndMsg(message, wParam, lParam);
-				}
+				bRet &= pEffect->OnWndMsg(message, wParam, lParam);
 			}
 			break;
 		case BASE_TYPE_ANIMATION:
 			{
 				CSonicAnimation * pAni = (CSonicAnimation *)pBase;
-				if(bRet)
-				{
-					bRet &= pAni->OnWndMsg(message, wParam, lParam);
-				}
+				bRet &= pAni->OnWndMsg(message, wParam, lParam);
 			}
+			break;
+		case BASE_TYPE_SKIN:
+			{
+				CSonicSkin * pSkin = (CSonicSkin *)pBase;
+				bRet &= pSkin->OnWndMsg(message, wParam, lParam);
+			}
+			break;
+		}
+		if(!bRet)
+		{
 			break;
 		}
 	}
@@ -467,9 +492,31 @@ ISonicWndEffect * CSonicUI::EffectFromHwnd(HWND hWnd)
 	{
 		return FALSE;
 	}
-	if(*g_UI.GetObjectTypePtr(pData->BaseList.back()) == BASE_TYPE_WND_EFFECT)
+	for(LIST_SONIC_BASE::iterator it = pData->BaseList.begin(); it != pData->BaseList.end(); it++)
 	{
-		return (ISonicWndEffect *)pData->BaseList.back();
+		ISonicBase * pBase = *it;
+		if(pBase->GetType() == BASE_TYPE_WND_EFFECT)
+		{
+			return (ISonicWndEffect *)pBase;
+		}
+	}
+	return NULL;
+}
+
+ISonicSkin * CSonicUI::SkinFromHwnd(HWND hWnd)
+{
+	HWND_DATA * pData = DataFromHwnd(hWnd);
+	if(pData == NULL || pData->BaseList.empty())
+	{
+		return FALSE;
+	}
+	for(LIST_SONIC_BASE::iterator it = pData->BaseList.begin(); it != pData->BaseList.end(); it++)
+	{
+		ISonicBase * pBase = *it;
+		if(pBase->GetType() == BASE_TYPE_SKIN)
+		{
+			return (ISonicSkin *)pBase;
+		}
 	}
 	return NULL;
 }
@@ -660,12 +707,6 @@ BOOL CSonicUI::Init()
 	{
 		return FALSE;
 	}
-	m_pOldGetWindowRect = ReplaceFuncAndCopy(GetProcAddress(hMod, "GetWindowRect"), MyGetWindowRect);
-	m_pOldGetClientRect = ReplaceFuncAndCopy(GetProcAddress(hMod, "GetClientRect"), MyGetClientRect);
-	if(m_pOldGetClientRect == NULL || m_pOldGetWindowRect == NULL)
-	{
-		return FALSE;
-	}
 	return TRUE;
 }
 
@@ -682,7 +723,6 @@ HDC CSonicUI::MyBeginPaint( HWND hwnd, LPPAINTSTRUCT lpPaint )
 	}
 	else
 	{
-		GetUpdateRect(hwnd, g_UI.m_rtUpdate, FALSE);
 		__asm
 		{
 			push [ebp + 0ch]
@@ -690,8 +730,8 @@ HDC CSonicUI::MyBeginPaint( HWND hwnd, LPPAINTSTRUCT lpPaint )
 			call [m_pOldBeginPaint]
 			mov [hdc], eax
 		}
+		GetClipBox(lpPaint->hdc, g_UI.m_rtUpdate);
 	}
-	g_UI.m_bPainting = TRUE;
 	return hdc;
 }
 
@@ -726,7 +766,6 @@ BOOL CSonicUI::MyEndPaint( HWND hWnd, CONST PAINTSTRUCT *lpPaint )
 			}
 			
 		}
-		pData->RedrawList.clear();
 	}
 	if(m_hPaintDC)
 	{
@@ -744,51 +783,9 @@ BOOL CSonicUI::MyEndPaint( HWND hWnd, CONST PAINTSTRUCT *lpPaint )
 		}
 	}
 	GetClientRect(hWnd, g_UI.m_rtUpdate);
-	g_UI.m_bPainting = FALSE;
 	return bRet;
 }
 
-BOOL CSonicUI::MyGetWindowRect(HWND hWnd, LPRECT lpRect)
-{
-	BOOL bRet = TRUE;
-	CSonicWndEffect * pEffect = (CSonicWndEffect *)g_UI.EffectFromHwnd(hWnd);
-	if(pEffect && pEffect->IsAlphaPerPixel())
-	{
-		SetRect(lpRect, pEffect->m_rtCache.left, pEffect->m_rtCache.top, pEffect->m_rtCache.right, pEffect->m_rtCache.bottom);
-	}
-	else
-	{
-		__asm
-		{
-			push [ebp + 0ch]
-			push [ebp + 8h]
-			call [m_pOldGetWindowRect]
-			mov [bRet], eax
-		}
-	}
-	return bRet;
-}
-
-BOOL CSonicUI::MyGetClientRect(HWND hWnd, LPRECT lpRect)
-{
-	BOOL bRet = TRUE;
-	CSonicWndEffect * pEffect = (CSonicWndEffect *)g_UI.EffectFromHwnd(hWnd);
-	if(pEffect && pEffect->IsAlphaPerPixel())
-	{
-		SetRect(lpRect, 0, 0, pEffect->m_rtCache.Width(), pEffect->m_rtCache.Height());
-	}
-	else
-	{
-		__asm
-		{
-			push [ebp + 0ch]
-			push [ebp + 8h]
-			call [m_pOldGetClientRect]
-			mov [bRet], eax
-		}
-	}
-	return bRet;
-}
 
 BOOL CSonicUI::IsCursorInWnd(HWND hWnd)
 {
@@ -888,18 +885,74 @@ BOOL CSonicUI::Redraw(ISonicPaint * pPaint, RECT * pRt /* = NULL */, BOOL bErase
 	{
 		return FALSE;
 	}
-	REDRAW_ITEM item;
-	item.pPaint = pPaint;
+	RECT rt;
 	if(pRt)
 	{
-		item.rt = *pRt;
+		rt = *pRt;
 	}
 	else
 	{
-		item.rt = *pPaint->GetPaintRect();
+		rt = *pPaint->GetPaintRect();
 	}
-	pData->RedrawList.push_back(item);
-	InvalidateRect(pPaint->GetSafeHwnd(), &item.rt, bErase);
+	InvalidateRect(pPaint->GetSafeHwnd(), &rt, bErase);
 	return TRUE;
 
+}
+
+BOOL CSonicUI::DrawWindow(HDC hdc, HWND hWnd, BOOL bRecursion /* = TRUE */)
+{
+	if(hWnd == NULL || IsWindow(hWnd) == FALSE)
+	{
+		return FALSE;
+	}
+	CRect rt;
+	GetWindowRect(hWnd, rt);
+	if(GetWindowLong(hWnd, GWL_STYLE) & WS_CAPTION)
+	{
+		SendMessage(hWnd, WM_PRINT, (WPARAM)hdc, PRF_NONCLIENT);
+		CRect rtClient;
+		GetClientRect(hWnd, rtClient);
+		CDibMgr dib;
+		dib.Create(hdc, rtClient.Width(), rtClient.Height());
+		SendMessage(hWnd, WM_ERASEBKGND, (WPARAM)dib.GetSafeHdc(), 0);
+		m_hPaintDC = dib.GetSafeHdc();
+		SendMessage(hWnd, WM_PAINT, (WPARAM)dib.GetSafeHdc(), 0);
+		ClientToScreen(hWnd, (LPPOINT)&rtClient.TopLeft());
+		ClientToScreen(hWnd, (LPPOINT)&rtClient.BottomRight());
+		BitBlt(hdc, rtClient.left - rt.left, rtClient.top - rt.top, rtClient.Width(), rtClient.Height(), dib.GetSafeHdc(), 0, 0, SRCCOPY);
+		dib.Clear();
+	}
+	else
+	{
+		SendMessage(hWnd, WM_ERASEBKGND, (WPARAM)hdc, 0);
+		m_hPaintDC = hdc;
+		SendMessage(hWnd, WM_PAINT, (WPARAM)hdc, 0);
+	}
+	
+	if(!bRecursion)
+	{		
+		return TRUE;
+	}
+
+	for(HWND hNext = GetWindow(hWnd, GW_CHILD); hNext; hNext = GetWindow(hNext, GW_HWNDNEXT))
+	{
+		CRect rtChild;
+		GetWindowRect(hNext, rtChild);
+		CDibMgr dib;
+		dib.Create(hdc, rtChild.Width(), rtChild.Height());
+		DrawWindow(dib.GetSafeHdc(), hNext, TRUE);
+		BitBlt(hdc, rtChild.left - rt.left, rtChild.top - rt.top, rtChild.Width(), rtChild.Height(), dib.GetSafeHdc(), 0, 0, SRCCOPY);
+		dib.Clear();
+	}
+	return TRUE;
+}
+
+HFONT CSonicUI::GetDefaultFont()
+{
+	return CSonicString::GetDefSonicFont();
+}
+
+BOOL CSonicUI::DrawText(HDC hDC, int x, int y, LPCTSTR lpszString, DWORD dwColor /* = 0 */, HFONT hFont /* = NULL */)
+{
+	return CSonicString::DrawText(hDC, x, y, lpszString, dwColor, hFont);
 }

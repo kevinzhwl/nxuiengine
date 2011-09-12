@@ -21,7 +21,7 @@ public:
 	virtual int GetCount();
 	virtual BOOL Backup();
 	virtual BOOL Restore();
-	virtual BOOL Redraw();
+	virtual BOOL Redraw(BOOL bEraseBackground = TRUE);
 	virtual int GetWidth();
 	virtual int GetHeight();
 	virtual HDC GetDC();
@@ -42,6 +42,7 @@ public:
 	virtual BOOL DelAllObject(BOOL bDestroyObject = FALSE);
 	virtual PAINT_ITEM * GetPaintItem(DWORD dwObjectId, BOOL bByIndex = FALSE);
 	virtual BOOL ShowObject(BOOL b, BOOL bRedraw, DWORD dwObjectId, BOOL bByIndex = FALSE);
+	virtual BOOL EnableDrawingBackup(BOOL b);
 
 public:
 	void InternalDraw(HDC hdc, int x, int y, HWND hWnd, RECT * pMemDCRect);
@@ -60,4 +61,5 @@ protected:
 	BOOL m_bAutoHeight;
 	BOOL m_bVisible;
 	CURRENT_PAINT m_CurrPaint;
+	BOOL m_bDrawingBackup;
 };

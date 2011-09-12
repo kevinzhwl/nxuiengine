@@ -172,6 +172,112 @@ BOOL CSonicImage::Draw(HDC hdc, int x /* = 0 */, int y /* = 0 */, DRAW_PARAM * p
 		return FALSE;
 	}
 
+	if(pDp)
+	{
+		if(pDp->dwMask & DP_TILE)
+		{
+			DRAW_PARAM dp = *pDp;
+			if(pDp->nTileLength == m_nWidth)
+			{
+				dp.dwMask &= ~DP_TILE;
+				return InternalDraw(hdc, x, y, &dp);
+			}
+			dp.dwMask &= ~DP_VER_TILE;
+			if(!dp.nTileDivider)
+			{
+				dp.nTileDivider = 4;
+			}
+			CRect rtSrc, rtDest;
+			rtDest = CalculateRectByDrawParam(x, y, &dp, rtSrc);
+			int nEdgeWidth = rtSrc.Width() / dp.nTileDivider;
+			int nMidWidth = rtSrc.Width() - nEdgeWidth * 2;
+			if(dp.nTileLength < nEdgeWidth * 2)
+			{
+				dp.nTileLength = nEdgeWidth * 2;
+			}
+			dp.dwMask &= ~DP_TILE;
+			dp.dwMask |= DP_SRC_CLIP;
+			if(dp.dwMask & DP_SCALE)
+			{
+				dp.fScaleX = 1.0f;
+			}
+			// draw left edge
+			SetRect(&dp.rtSrc, rtSrc.left, rtSrc.top, rtSrc.left + nEdgeWidth, rtSrc.bottom);
+			dp.cx = nEdgeWidth;
+			InternalDraw(hdc, rtDest.left, rtDest.top, &dp);
+
+			// tile draw
+			int x = rtDest.left + nEdgeWidth;
+			int cx;
+			do 
+			{
+				cx = rtDest.right - nEdgeWidth - x > nMidWidth ? nMidWidth : rtDest.right - nEdgeWidth - x;
+				SetRect(&dp.rtSrc, rtSrc.left + nEdgeWidth, rtSrc.top, rtSrc.left + nEdgeWidth + cx, rtSrc.bottom);
+				dp.cx = cx;
+				InternalDraw(hdc, x, rtDest.top, &dp);
+				x += cx;
+			} while (x < rtDest.right - nEdgeWidth);
+
+			// draw right edge
+			SetRect(&dp.rtSrc, rtSrc.right - nEdgeWidth, rtSrc.top, rtSrc.right, rtSrc.bottom);
+			dp.cx = nEdgeWidth;
+			return InternalDraw(hdc, rtDest.right - nEdgeWidth, rtDest.top, &dp);
+		}
+		else if(pDp->dwMask & DP_VER_TILE)
+		{
+			DRAW_PARAM dp = *pDp;
+			if(pDp->nTileLength == m_nHeight)
+			{
+				dp.dwMask &= ~DP_VER_TILE;
+				return InternalDraw(hdc, x, y, &dp);
+			}
+			dp.dwMask &= ~DP_TILE;
+			if(!dp.nTileDivider)
+			{
+				dp.nTileDivider = 4;
+			}
+			CRect rtSrc, rtDest;
+			rtDest = CalculateRectByDrawParam(x, y, &dp, rtSrc);
+			int nEdgeHeight = rtSrc.Height() / dp.nTileDivider;
+			int nMidHeight = rtSrc.Height() - nEdgeHeight * 2;
+			if(dp.nTileLength < nEdgeHeight * 2)
+			{
+				dp.nTileLength = nEdgeHeight * 2;
+			}
+			dp.dwMask &= ~DP_VER_TILE;
+			dp.dwMask |= DP_SRC_CLIP;
+			if(dp.dwMask & DP_SCALE)
+			{
+				dp.fScaleY = 1.0f;
+			}
+			// draw top edge
+			SetRect(&dp.rtSrc, rtSrc.left, rtSrc.top, rtSrc.right, rtSrc.top + nEdgeHeight);
+			dp.cy = nEdgeHeight;
+			InternalDraw(hdc, rtDest.left, rtDest.top, &dp);
+
+			// vertically tile draw
+			int y = rtDest.top + nEdgeHeight;
+			int cy;
+			do 
+			{
+				cy = rtDest.bottom - nEdgeHeight - y > nMidHeight ? nMidHeight : rtDest.bottom - nEdgeHeight - y;
+				SetRect(&dp.rtSrc, rtSrc.left, rtSrc.top + nEdgeHeight, rtSrc.right, rtSrc.top + nEdgeHeight + cy);
+				dp.cy = cy;
+				InternalDraw(hdc, rtDest.left, y, &dp);
+				y += cy;
+			} while (y < rtDest.bottom - nEdgeHeight);
+
+			// draw bottom edge
+			SetRect(&dp.rtSrc, rtSrc.left, rtSrc.bottom - nEdgeHeight, rtSrc.right, rtSrc.bottom);
+			dp.cy = nEdgeHeight;
+			return InternalDraw(hdc, rtDest.left, rtDest.bottom - nEdgeHeight, &dp);
+		}
+	}
+	return InternalDraw(hdc, x, y, pDp);
+}
+
+BOOL CSonicImage::InternalDraw(HDC hdc, int x, int y, DRAW_PARAM * pDp)
+{
 	CRect rtSrc, rtDest;
 	rtDest = CalculateRectByDrawParam(x, y, pDp, rtSrc);
 
@@ -418,7 +524,7 @@ BOOL CSonicImage::SaveAsFile(LPCTSTR lpszFileName, enImageType imgType, int nQua
 		break;
 	}
 	CString strPath = lpszFileName;
-	int nFind1 = strPath.ReverseFind('\\');
+	int nFind1 = strPath.ReverseFind(_T('\\'));
 	int nFind2 = strPath.ReverseFind(_T('/'));
 	int nFind = max(nFind1, nFind2);
 	if(nFind != -1)
@@ -429,10 +535,18 @@ BOOL CSonicImage::SaveAsFile(LPCTSTR lpszFileName, enImageType imgType, int nQua
 			SHCreateDirectoryEx(NULL, strPath, NULL);
 		}
 	}
+#ifdef _UNICODE
+    USES_CONVERSION;	
+	if(img.Save(W2A(lpszFileName), dwType) == FALSE)
+	{
+		return FALSE;
+	}
+#else
 	if(img.Save(lpszFileName, dwType) == FALSE)
 	{
 		return FALSE;
 	}
+#endif	
 	img.Clear();
 	return TRUE;
 }
@@ -448,39 +562,59 @@ BOOL CSonicImage::Gray()
 	return TRUE;
 }
 
-HRGN CSonicImage::CreateRgn(DWORD dwColorKey /* = DEFAULT_COLOR_KEY */)
+HRGN CSonicImage::CreateRgn(DWORD dwColorKey /* = DEFAULT_COLOR_KEY */, int x /* = 0 */, int y /* = 0 */, RECT * pRtSrc /* = NULL */, BOOL bReverse /* = FALSE */)
 {
 	if(m_Dib.IsValid() == FALSE)
 	{
 		return FALSE;
 	}
 
-	int nSrcW = m_nWidth;
-	int nSrcH = m_nHeight;
 	int nBytePixel = 4;
 	BYTE * pSrc = m_Dib.GetBits();
 
-	HRGN hAll = CreateRectRgn(0, 0, 0, 0);
-	BOOL bBound = FALSE;
-	for(int i = 0; i < nSrcH; i++)
+	CRect rtSrc(0, 0, m_nWidth, m_nHeight);
+	if(pRtSrc)
 	{
-		int nLeftX = 0;
-		for(int j = 0; j < nSrcW; j++)
+		rtSrc = *pRtSrc;
+	}
+
+	int nLeftx = -1;
+	HRGN hAll = CreateRectRgn(x, y, x + rtSrc.Width(), y + rtSrc.Height());
+
+	for(int i = rtSrc.top; i < rtSrc.bottom; i++)
+	{
+		for(int j = rtSrc.left; j < rtSrc.right; j++)
 		{
-			DWORD dwColor = *(DWORD *)(pSrc + (i * nSrcW * nBytePixel) + j * nBytePixel);
-			if(dwColor != dwColorKey && bBound == FALSE)
+			DWORD dwColor = *(DWORD *)(pSrc + (i * m_nWidth * nBytePixel) + j * nBytePixel);
+			if(!bReverse)
 			{
-				nLeftX = j;
-				bBound = TRUE;
+				if(EQUAL_24COLOR(dwColor, dwColorKey) && nLeftx < 0)
+				{
+					nLeftx = j;
+				}
+				if(nLeftx >= 0 && (!EQUAL_24COLOR(dwColor, dwColorKey) || j + 1 == rtSrc.right))
+				{
+					if(EQUAL_24COLOR(dwColor, dwColorKey) && j + 1 == rtSrc.right)j++;
+					HRGN hTemp = CreateRectRgn(x + nLeftx - rtSrc.left, y + i - rtSrc.top, x + j - rtSrc.left, y + i + 1 - rtSrc.top);
+					CombineRgn(hAll, hAll, hTemp, RGN_XOR);
+					DeleteObject(hTemp);
+					nLeftx = -1;
+				}
 			}
-			if((dwColor == dwColorKey || j + 1 == nSrcW) && bBound == TRUE)
+			else
 			{
-				bBound = FALSE;
-				// Ωÿ¡À“ªøÈ
-				if(j + 1 == nSrcW && dwColorKey != dwColor)j++;
-				HRGN hTemp = CreateRectRgn(nLeftX, i, j, i + 1);
-				CombineRgn(hAll, hAll, hTemp, RGN_OR);
-				DeleteObject(hTemp);
+				if(!EQUAL_24COLOR(dwColor, dwColorKey) && nLeftx < 0)
+				{
+					nLeftx = j;
+				}
+				if(nLeftx >= 0 && (EQUAL_24COLOR(dwColor, dwColorKey) || j + 1 == rtSrc.right))
+				{
+					if(!EQUAL_24COLOR(dwColor, dwColorKey) && j + 1 == rtSrc.right)j++;
+					HRGN hTemp = CreateRectRgn(x + nLeftx - rtSrc.left, y + i - rtSrc.top, x + j - rtSrc.left, y + i + 1 - rtSrc.top);
+					CombineRgn(hAll, hAll, hTemp, RGN_XOR);
+					DeleteObject(hTemp);
+					nLeftx = -1;
+				}
 			}
 		}
 	}
@@ -522,7 +656,15 @@ DWORD CSonicImage::GetPixel(int x, int y)
 	{
 		return 0;
 	}
-	return *(DWORD *)(m_Dib.GetBits() + y * m_nWidth * 4 + x * 4);
+	if(y < 0 || y >= m_nHeight)
+	{
+		return 0;
+	}
+	if(x < 0 || x >= m_nWidth)
+	{
+		return 0;
+	}
+	return *(DWORD *)(m_Dib.GetBits() + (m_nHeight - y - 1) * m_nWidth * 4 + x * 4);
 }
 
 BOOL CSonicImage::SetPixel(int x, int y, DWORD dwColor)
@@ -539,7 +681,15 @@ BOOL CSonicImage::SetPixel(int x, int y, DWORD dwColor)
 	{
 		dwColor |= 0xff000000;
 	}
-	*(DWORD *)(m_Dib.GetBits() + y * m_nWidth * 4 + x * 4) = dwColor;
+	if(y < 0 || y >= m_nHeight)
+	{
+		return 0;
+	}
+	if(x < 0 || x >= m_nWidth)
+	{
+		return 0;
+	}
+	*(DWORD *)(m_Dib.GetBits() + (m_nHeight - y - 1) * m_nWidth * 4 + x * 4) = dwColor;
 	return TRUE;
 }
 
@@ -594,6 +744,14 @@ RECT CSonicImage::CalculateRectByDrawParam(int x, int y, const DRAW_PARAM * pDp,
 		{
 			cx = pDp->cx;
 			cy = pDp->cy;
+		}
+		if(pDp->dwMask & DP_TILE)
+		{
+			cx = pDp->nTileLength;
+		}
+		if(pDp->dwMask & DP_VER_TILE)
+		{
+			cy = pDp->nTileLength;
 		}
 	}
 	rtDest.SetRect(x, y, x + cx, y + cy);
@@ -757,6 +915,17 @@ BOOL CSonicImage::DestroyAlphaChannel()
 		return FALSE;
 	}
 	CSSE::DoAnd(0xffffff, (char *)m_Dib.GetBits(), m_Dib.GetSize());
+	return TRUE;
+}
+
+BOOL CSonicImage::SetAlphaChannel(BYTE bAlpha)
+{
+	if(IsValid() == FALSE)
+	{
+		return FALSE;
+	}
+	CSSE::DoOr((bAlpha << 24), (char *)m_Dib.GetBits(), m_Dib.GetSize());
+	EnableAlphaChannel(FALSE);
 	return TRUE;
 }
 

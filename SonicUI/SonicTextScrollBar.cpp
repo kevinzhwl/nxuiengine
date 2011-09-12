@@ -16,6 +16,8 @@ CSonicTextScrollBar::~CSonicTextScrollBar(void)
 
 void CSonicTextScrollBar::InitValue()
 {
+	m_bColor = FALSE;
+	m_dwColor = 0;
 	m_bScroll = FALSE;
 	m_bVerScroll = FALSE;
 	m_nSpeed = 0;
@@ -38,6 +40,8 @@ void CSonicTextScrollBar::Clear()
 	ClearBaseData();
 	for(SONIC_PAINT_LIST::iterator it = m_PaintList.begin(); it != m_PaintList.end(); it++)
 	{
+		ISonicPaint * pPaint = *it;
+		pPaint->DelAllObject(TRUE);
 		g_UI.DestroyObject(*it);
 	}
 	m_PaintList.clear();
@@ -69,6 +73,7 @@ BOOL CSonicTextScrollBar::Create(HWND hWnd, int x, int y, int cx, int cy, BOOL b
 	m_pBg = g_UI.CreatePaint();
 	m_pBg->Create(TRUE, m_rtScroll.Width(), m_rtScroll.Height(), hWnd);
 	m_pBg->Delegate(DELEGATE_EVENT_PAINT, NULL, this, &CSonicTextScrollBar::OnRender);
+	m_pBg->EnableDrawingBackup(TRUE);
 	return g_UI.Attach(hWnd, this);
 }
 
@@ -168,6 +173,10 @@ BOOL CSonicTextScrollBar::Render(HDC hdc)
 		return FALSE;
 	}
 	SwitchRender(FALSE);
+	if(m_bColor)
+	{
+		m_pBg->Flush(m_dwColor);
+	}
 	return m_pBg->Draw(hdc, m_rtScroll.left, m_rtScroll.top, m_hWnd);
 }
 
@@ -336,5 +345,17 @@ BOOL CSonicTextScrollBar::ShowScroll(BOOL b, BOOL bRedraw /* = TRUE */)
 	{
 		m_PaintList[m_nCurrStr]->ShowPaint(b, bRedraw);
 	}
+	return TRUE;
+}
+
+BOOL CSonicTextScrollBar::SetBGColor(DWORD dwColor)
+{
+	if(IsValid() == FALSE)
+	{
+		return FALSE;
+	}
+	m_bColor = TRUE;
+	m_dwColor = dwColor;
+	m_pBg->EnableDrawingBackup(FALSE);
 	return TRUE;
 }

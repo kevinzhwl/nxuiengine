@@ -21,6 +21,7 @@ void CSonicPaint::InitValue()
 	m_bValid = FALSE;
 	memset(&m_CurrPaint, 0, sizeof(m_CurrPaint));
 	m_bVisible = FALSE;
+	m_bDrawingBackup = FALSE;
 }
 
 void CSonicPaint::Clear()
@@ -29,7 +30,7 @@ void CSonicPaint::Clear()
 	{
 		return;
 	}
-	DelAllObject(TRUE);
+	DelAllObject(FALSE);
 	Redraw();
 	m_Dib.Clear();
 	m_ItemList.clear();
@@ -107,6 +108,7 @@ BOOL CSonicPaint::Draw(HDC hdc, int x /* = 0 */, int y /* = 0 */, HWND hWnd /* =
 	}
 	CRect rtClient;
 	GetClientRect(m_hWnd, rtClient);
+	CRect rtUpdate = g_UI.m_rtUpdate;
 	if(pMemDCRect)
 	{
 		m_rtMsg.IntersectRect(m_rtPaint, pMemDCRect);
@@ -116,21 +118,24 @@ BOOL CSonicPaint::Draw(HDC hdc, int x /* = 0 */, int y /* = 0 */, HWND hWnd /* =
 		m_rtMsg.IntersectRect(m_rtPaint, rtClient);
 	}
 	CRect rt;
-	if(rt.IntersectRect(g_UI.m_rtUpdate, m_rtPaint) == FALSE)
+	if(rt.IntersectRect(rtUpdate, m_rtPaint) == FALSE)
 	{
 		return FALSE;
 	}
 	
 	if(m_Dib.IsValid())
 	{
-		if(m_Dib.IsBackup() == FALSE)
+		if(m_bDrawingBackup)
 		{
-			BitBlt(m_Dib.GetSafeHdc(), 0, 0, m_rtPaint.Width(), m_rtPaint.Height(), hdc, m_rtPaint.left, m_rtPaint.top, SRCCOPY);
-			m_Dib.Backup();
-		}
-		else
-		{
-			m_Dib.Restore();
+			if(m_Dib.IsBackup() == FALSE)
+			{
+				BitBlt(m_Dib.GetSafeHdc(), 0, 0, m_rtPaint.Width(), m_rtPaint.Height(), hdc, m_rtPaint.left, m_rtPaint.top, SRCCOPY);
+				m_Dib.Backup();
+			}
+			else
+			{
+				m_Dib.Restore();
+			}
 		}
 		InternalDraw(m_Dib.GetSafeHdc(), 0, 0, m_hWnd, m_rtPaint);
 		if(nAlpha < 0)
@@ -178,7 +183,10 @@ BOOL CSonicPaint::Resize(int cx /* = 0 */, int cy /* = 0 */)
 	}
 	if(m_bAutoWidth == FALSE && m_bAutoHeight == FALSE)
 	{
-		m_Dib.Resize(m_rtPaint.Width(), m_rtPaint.Height());
+		if(m_Dib.IsValid())
+		{
+			m_Dib.Resize(m_rtPaint.Width(), m_rtPaint.Height());
+		}
 	}
 	else
 	{
@@ -219,13 +227,12 @@ BOOL CSonicPaint::DelObject(DWORD dwObjectId, BOOL bByIndex /* = FALSE */, BOOL 
 		{
 			return FALSE;
 		}
-		for(LIST_PAINT_ITEM::iterator it = m_ItemList.begin(); it != m_ItemList.end(); it++)
+		for(LIST_PAINT_ITEM::iterator it = m_ItemList.begin(); it != m_ItemList.end(); )
 		{
 			PAINT_ITEM & item = *it;
 			if(IsValidItem(item.pBase) == FALSE)
 			{
 				it = m_ItemList.erase(it);
-				it--;
 				continue;
 			}
 			if(item.pBase->GetObjectId() == dwObjectId)
@@ -254,6 +261,7 @@ BOOL CSonicPaint::DelObject(DWORD dwObjectId, BOOL bByIndex /* = FALSE */, BOOL 
 				Redraw();
 				return TRUE;
 			}
+			it++;
 		}
 	}
 	else
@@ -330,7 +338,7 @@ BOOL CSonicPaint::Restore()
 	return m_Dib.Restore();
 }
 
-BOOL CSonicPaint::Redraw()
+BOOL CSonicPaint::Redraw(BOOL bEraseBackground /* = TRUE */)
 {
 	if(IsValid() == FALSE)
 	{
@@ -340,7 +348,11 @@ BOOL CSonicPaint::Redraw()
 	{
 		return FALSE;
 	}
-	return g_UI.Redraw(this);
+	if(m_rtPaint.Width() == 0 || m_rtPaint.Height() == 0)
+	{
+		return FALSE;
+	}
+	return g_UI.Redraw(this, NULL, bEraseBackground);
 }
 
 int CSonicPaint::GetWidth()
@@ -546,13 +558,12 @@ BOOL CSonicPaint::ShowPaint(BOOL b, BOOL bRedraw /* = TRUE */)
 	{
 		return FALSE;
 	}
-	for(LIST_PAINT_ITEM::iterator it = m_ItemList.begin(); it != m_ItemList.end(); it++)
+	for(LIST_PAINT_ITEM::iterator it = m_ItemList.begin(); it != m_ItemList.end(); )
 	{
 		PAINT_ITEM &item = *it;
 		if(IsValidItem(item.pBase) == FALSE)
 		{
 			it = m_ItemList.erase(it);
-			it--;
 			continue;
 		}
 		item.bVisible = b;
@@ -566,6 +577,7 @@ BOOL CSonicPaint::ShowPaint(BOOL b, BOOL bRedraw /* = TRUE */)
 			ISonicString * pStr = (ISonicString *)item.pBase;
 			pStr->ShowString(b, bRedraw);
 		}
+		it++;
 	}
 	if(bRedraw)
 	{
@@ -709,5 +721,15 @@ BOOL CSonicPaint::ShowObject(BOOL b, BOOL bRedraw, DWORD dwObjectId, BOOL bByInd
 		break;
 	}
 	pItem->bVisible = b;
+	return TRUE;
+}
+
+BOOL CSonicPaint::EnableDrawingBackup(BOOL b)
+{
+	if(IsValid() == FALSE)
+	{
+		return FALSE;
+	}
+	m_bDrawingBackup = b;
 	return TRUE;
 }

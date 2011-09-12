@@ -5,17 +5,18 @@
 #include "time.h"
 #include "SonicUIDemo.h"
 #include "ISonicUI.h"
-#pragma comment(lib, "SonicUI.lib")
-using namespace sonic_ui;
 #define MAX_LOADSTRING 100
-//#include "tool.h"
+//#include "tool.h" 
+
+#include "SkinDlg.h"
+#include "SkinMgr.h"
 
 // 全局变量:
 HINSTANCE hInst;								// 当前实例
 TCHAR szTitle[MAX_LOADSTRING];					// 标题栏文本
 TCHAR szWindowClass[MAX_LOADSTRING];			// 主窗口类名
 
-#define TEST 11
+#define TEST 15
 ISonicString * g_pTest[TEST] = {0};
 ISonicWndEffect * g_pEffect = NULL;
 ISonicAnimation * g_pAni = NULL;
@@ -24,7 +25,12 @@ ISonicAnimation * g_pTransPaint = NULL;
 
 void WINAPI OnClose(ISonicString * pStr, LPVOID)
 {
-	PostQuitMessage(0);
+	DestroyWindow(g_pEffect->GetSafeHwnd());
+}
+
+void WINAPI OnShutter(ISonicBase *, LPVOID)
+{
+	g_pEffect->Shutter();
 }
 
 void WINAPI OnMove(ISonicString * pStr, LPVOID)
@@ -46,6 +52,15 @@ void WINAPI OnAni(ISonicString * pStr, LPVOID)
 void WINAPI OnTransOver(ISonicAnimation * pAni, LPVOID)
 {
 	g_pAni->Transform(FALSE);
+}
+
+void WINAPI OnPopupDlg(ISonicString * pStr, LPVOID pParam)
+{
+	HWND hWnd = (HWND)pParam;
+	static CSkinDlg dlg;
+	//dlg.DoModal(hWnd);
+	dlg.Create(hWnd);
+	dlg.ShowWindow(SW_SHOW);
 }
 
 void WINAPI OnRotate(ISonicAnimation * pAni, LPVOID)
@@ -165,7 +180,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    hInst = hInstance; // 将实例句柄存储在全局变量中
 
-   hWnd = CreateWindow(szWindowClass, szTitle, WS_OVERLAPPEDWINDOW,
+   hWnd = CreateWindowEx(0, szWindowClass, szTitle, WS_OVERLAPPEDWINDOW, 
       100, 100, 800, 550, NULL, NULL, hInstance, NULL);
 
 //    hSuck = CreateWindow(szWindowClass, szTitle, WS_POPUP | WS_VISIBLE,
@@ -176,24 +191,11 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
       return FALSE;
    }
    srand((unsigned int)time(NULL));
+   _SkinMgr.Init();
 
-   ISonicImage * pImgNormal = GetSonicUI()->CreateImage();
-   pImgNormal->Load(BMP_NORMAL);
-   pImgNormal->SetColorKey(RGB(255, 0, 255));
-
-   ISonicImage * pImgHover = GetSonicUI()->CreateImage();
-   pImgHover->Load(BMP_HOVER);
-   pImgHover->SetColorKey(RGB(255, 0, 255));
-
-   ISonicImage * pImgClick = GetSonicUI()->CreateImage();
-   pImgClick->Load(BMP_CLICK);
-   pImgClick->SetColorKey(RGB(255, 0, 255));
-
-   ISonicImage * pImgGif = GetSonicUI()->CreateImage();
-   pImgGif->Load(GIF_TEST1);
-
-   ISonicImage * pImgCard = GetSonicUI()->CreateImage();
-   pImgCard->Load(BMP_CLICK);
+   CSkinDlg dlg;
+//    dlg.DoModal();
+//    return FALSE;
 
    for(int i = 0; i < TEST; i++)
    {
@@ -209,35 +211,47 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
    g_pTest[4]->Format(_T("/sparkle, sparkle_color=%x|%x|%x/闪烁特殊"), RGB(255, 0, 0), RGB(255, 255, 0), RGB(0, 255, 0));
 
-   g_pTest[5]->Format(_T("/fadeout, fadeout_min=0/渐隐渐现/p=%d/"), pImgClick->GetObjectId());
+   g_pTest[5]->Format(_T("/fadeout, fadeout_min=0/渐隐渐现/p=%d/"), _SkinMgr.pImgClick->GetObjectId());
 
    g_pTest[6]->Format(_T("/c=%x, line_width=100/我们都有一个家，名字叫中国，兄弟姐妹都很多，景色也不错"), RGB(0, 255, 0));
 
    g_pTest[7]->Format(_T("/c=%x, line_width=100, single_line=2/我们都有一个家，名字叫中国，兄弟姐妹都很多，景色也不错"), RGB(0, 0, 0));
 
    g_pTest[8]->Format(_T("/a, c=%x, linkl=2/点我关闭程序"), RGB(255, 0, 255));
-   g_pTest[8]->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, &OnClose);
+   g_pTest[8]->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnShutter);
 
-   g_pTest[9]->Format(_T("/a, p=%d, ph=%d, pc=%d, linkt='点我移动'/"), pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
+   g_pTest[9]->Format(_T("/a, p3=%d|%d|%d, linkt='点我移动'/"), _SkinMgr.pImgNormal->GetObjectId(), _SkinMgr.pImgHover->GetObjectId(), _SkinMgr.pImgClick->GetObjectId());
    g_pTest[9]->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnMove);
 
-   g_pTest[10]->Format(_T("/a, p=%d, ph=%d, pc=%d, linkt='点我动画关闭', animation=40/"), pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
+   g_pTest[10]->Format(_T("/a, p3=%d|%d|%d, linkt='点我动画关闭', animation=40/"), _SkinMgr.pImgNormal->GetObjectId(), _SkinMgr.pImgHover->GetObjectId(), _SkinMgr.pImgClick->GetObjectId());
    g_pTest[10]->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnAniClose);
 
+   g_pTest[11]->Format(_T("/a, p4=%d, linkt='大家好', btn_text='点击弹出对话框', btn_height=30/"), _SkinMgr.pImgButton->GetObjectId());
+   g_pTest[11]->Delegate(DELEGATE_EVENT_CLICK, hWnd, NULL, OnPopupDlg);
+/*
+   ISonicSkin * pSkin = GetSonicUI()->CreateSkin();
+   pSkin->SetSkin(_T("style"), _T("sizable:1"));
+   pSkin->SetSkin(_T("bg"), _T("image:%d; color_key:%d"), _SkinMgr.pImgDlg->GetObjectId(), RGB(128, 0, 128));
+   pSkin->Attach(hWnd);
+*/
    g_pEffect = GetSonicUI()->CreateWndEffect();
-   g_pEffect->Attach(hWnd, FALSE);
+   g_pEffect->Attach(hWnd);
    g_pEffect->Delegate(DELEGATE_EVENT_TRANSFORM_OVER, NULL, NULL, OnClose);
+   g_pEffect->Delegate(DELEGATE_EVENT_SHUTTER_OVER, NULL, NULL, OnClose);
+
+
+   
 
    ISonicString * pDemo1 = GetSonicUI()->CreateString();
-   pDemo1->Format(_T("/a/大家好我是滚动字幕/p=%d/"), pImgCard->GetObjectId());
+   pDemo1->Format(_T("/a/大家好我是滚动字幕/p=%d/"), _SkinMgr.pImgCard->GetObjectId());
    ISonicTextScrollBar * pScroll  = GetSonicUI()->CreateTextScrollBar();
    pScroll->Create(hWnd, 300, 10, 150, 60, TRUE, 40);
    pScroll->AddText(pDemo1->GetObjectId());
-   pScroll->AddText(pImgNormal->GetObjectId());
+   pScroll->AddText(_SkinMgr.pImgNormal->GetObjectId());
    pScroll->DoScroll();
 
    ISonicString * pDemo2 = GetSonicUI()->CreateString();
-   pDemo2->Format(_T("/a, p=%d, ph=%d, pc=%d, linkt='点我试试动画效果'/"), pImgNormal->GetObjectId(), pImgHover->GetObjectId(), pImgClick->GetObjectId());
+   pDemo2->Format(_T("/a, p3=%d|%d|%d, linkt='点我试试动画效果'/"), _SkinMgr.pImgNormal->GetObjectId(), _SkinMgr.pImgHover->GetObjectId(), _SkinMgr.pImgClick->GetObjectId());
    pDemo2->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnAni);
    g_pAni = GetSonicUI()->CreateAnimation();
    g_pAni->Create(hWnd, 300, 200, pDemo2->GetWidth(), pDemo2->GetHeight());
@@ -245,7 +259,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    g_pAni->AddObject(pDemo2->GetObjectId());
 
    ISonicString * pGif = GetSonicUI()->CreateString();
-   pGif->Format(_T("/p=%d/"), pImgGif->GetObjectId());
+   pGif->Format(_T("/p=%d/"), _SkinMgr.pImgGif->GetObjectId());
    g_pMoveImg = GetSonicUI()->CreateAnimation();
    g_pMoveImg->Create(hWnd, 100, 200, pGif->GetWidth(), pGif->GetHeight());
    g_pMoveImg->Delegate(DELEGATE_EVENT_MOUSEENTER, NULL, NULL, OnMouseEnter);
@@ -256,7 +270,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
    ISonicPaint * pPaint = GetSonicUI()->CreatePaint();
    pPaint->Create(FALSE);
    pPaint->AddObject(pStrTrans->GetObjectId());
-   pPaint->AddObject(pImgNormal->GetObjectId(), 0, pStrTrans->GetHeight() + 10);
+   pPaint->AddObject(_SkinMgr.pImgNormal->GetObjectId(), 0, pStrTrans->GetHeight() + 10);
    g_pTransPaint = GetSonicUI()->CreateAnimation();
    g_pTransPaint->Create(hWnd, 400, 200, pPaint->GetWidth(), pPaint->GetHeight());
    g_pTransPaint->Delegate(DELEGATE_EVENT_CLICK, NULL, NULL, OnRotate);
@@ -286,6 +300,24 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	switch (message) 
 	{
+// 	case WM_NCPAINT:
+// 		{
+// 			HDC hdc;
+// 			hdc = GetWindowDC(hWnd);
+// 			// Paint into this DC
+// 			RECT rtWnd;
+// 			GetWindowRect(hWnd, &rtWnd);
+// 			OffsetRect(&rtWnd, -rtWnd.left, -rtWnd.top);
+// 			FillRect(hdc, &rtWnd, (HBRUSH)GetStockObject(GRAY_BRUSH));
+// 			ReleaseDC(hWnd, hdc);
+// 		}
+// 		break;
+	case WM_LBUTTONUP:
+		{
+			//SendMessage(hWnd, WM_NCLBUTTONDBLCLK, HTCAPTION, MAKELPARAM(100, 10));
+			//SendMessage(hWnd, WM_RBUTTONUP, 0, MAKELPARAM(99, -20));
+		}
+		break;
 	case WM_COMMAND:
 		wmId    = LOWORD(wParam); 
 		wmEvent = HIWORD(wParam); 
@@ -302,6 +334,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			return DefWindowProc(hWnd, message, wParam, lParam);
 		}
 		break;
+	case WM_ERASEBKGND:
+		{
+			return DefWindowProc(hWnd, message, wParam, lParam);
+		}
+		break;
 	case WM_PAINT:
 		{
 			hdc = BeginPaint(hWnd, &ps);
@@ -309,7 +346,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			int y = 10;
 			for(int i = 0; i < TEST; i++)
 			{
-				g_pTest[i]->TextOut(hdc, 10, y);
+				g_pTest[i]->TextOut(hdc, 10, y, hWnd);
 				y += g_pTest[i]->GetHeight() + 20;
 			}
 			EndPaint(hWnd, &ps);

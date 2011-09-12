@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ConstDefine.h"
-
 #include "Tlhelp32.h"
 
 
@@ -43,4 +42,15 @@ HWND GetTopParent(HWND hWnd)
 		}
 	}
 	return hTemp;
+}
+
+DWORD GetColorDifference(DWORD dwColor1, DWORD dwColor2)
+{
+	DWORD r1 = GetRValue(dwColor1);
+	DWORD r2 = GetRValue(dwColor2);
+	DWORD g1 = GetGValue(dwColor1);
+	DWORD g2 = GetGValue(dwColor2);
+	DWORD b1 = GetBValue(dwColor1);
+	DWORD b2 = GetBValue(dwColor2);
+	return (r2 -r1) * (r2 - r1) + (g2 - g1) * (g2 - g1) + (b2 - b1) * (b2 - b1);
 }
