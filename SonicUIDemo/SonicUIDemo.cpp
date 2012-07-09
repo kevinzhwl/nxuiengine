@@ -6,7 +6,7 @@
 #include "SonicUIDemo.h"
 #include "ISonicUI.h"
 #define MAX_LOADSTRING 100
-#include "tool.h" 
+//#include "tool.h" 
 
 #include "SkinDlg.h"
 #include "SkinMgr.h"

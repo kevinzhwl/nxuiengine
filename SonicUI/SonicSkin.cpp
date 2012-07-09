@@ -21,28 +21,28 @@ CSonicSkin::~CSonicSkin(void)
 BOOL CSonicSkin::Init()
 {
 	// name
-	m_mapName[_T("bg")] = Name_bg;
-	m_mapName[_T("style")] = Name_style;
-	m_mapName[_T("button")] = Name_button;
+	m_mapName[_T("bg")] = &CSonicSkin::Name_bg;
+	m_mapName[_T("style")] = &CSonicSkin::Name_style;
+	m_mapName[_T("button")] = &CSonicSkin::Name_button;
 
 	// value
-	m_mapValue[_T("button_image")] = Value_button_image;
-	m_mapValue[_T("button_text_ctrl")] = Value_button_text_ctrl;
-	m_mapValue[_T("button_btn_ctrl")] = Value_button_btn_ctrl;
-	m_mapValue[_T("bg_image")] = Value_bg_image;
-	m_mapValue[_T("bg_close")] = Value_bg_close;
-	m_mapValue[_T("bg_min")] = Value_bg_min;
-	m_mapValue[_T("bg_max")] = Value_bg_max;
-	m_mapValue[_T("bg_restore")] = Value_bg_restore;
-	m_mapValue[_T("bg_icon")] = Value_bg_icon;
-	m_mapValue[_T("bg_top_height")] = Value_bg_top_height;
-	m_mapValue[_T("bg_title_height")] = Value_bg_title_height;
-	m_mapValue[_T("bg_title_text")] = Value_bg_title_text;
-	m_mapValue[_T("bg_color_key")] = Value_bg_color_key;
-	m_mapValue[_T("bg_btn_space")] = Value_bg_btn_space;
-	m_mapValue[_T("bg_btn_top_margin")] = Value_bg_btn_top_margin;
-	m_mapValue[_T("bg_btn_right_margin")] = Value_bg_btn_right_margin;
-	m_mapValue[_T("bg_enable_drag")] = Value_bg_enable_drag;
+	m_mapValue[_T("button_image")] = &CSonicSkin::Value_button_image;
+	m_mapValue[_T("button_text_ctrl")] = &CSonicSkin::Value_button_text_ctrl;
+	m_mapValue[_T("button_btn_ctrl")] = &CSonicSkin::Value_button_btn_ctrl;
+	m_mapValue[_T("bg_image")] = &CSonicSkin::Value_bg_image;
+	m_mapValue[_T("bg_close")] = &CSonicSkin::Value_bg_close;
+	m_mapValue[_T("bg_min")] = &CSonicSkin::Value_bg_min;
+	m_mapValue[_T("bg_max")] = &CSonicSkin::Value_bg_max;
+	m_mapValue[_T("bg_restore")] = &CSonicSkin::Value_bg_restore;
+	m_mapValue[_T("bg_icon")] = &CSonicSkin::Value_bg_icon;
+	m_mapValue[_T("bg_top_height")] = &CSonicSkin::Value_bg_top_height;
+	m_mapValue[_T("bg_title_height")] = &CSonicSkin::Value_bg_title_height;
+	m_mapValue[_T("bg_title_text")] = &CSonicSkin::Value_bg_title_text;
+	m_mapValue[_T("bg_color_key")] = &CSonicSkin::Value_bg_color_key;
+	m_mapValue[_T("bg_btn_space")] = &CSonicSkin::Value_bg_btn_space;
+	m_mapValue[_T("bg_btn_top_margin")] = &CSonicSkin::Value_bg_btn_top_margin;
+	m_mapValue[_T("bg_btn_right_margin")] = &CSonicSkin::Value_bg_btn_right_margin;
+	m_mapValue[_T("bg_enable_drag")] = &CSonicSkin::Value_bg_enable_drag;
 
 	return TRUE;
 }
