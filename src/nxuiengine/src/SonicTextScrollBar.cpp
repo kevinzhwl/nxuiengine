@@ -1,4 +1,4 @@
-#include <nxui/StdAfx.h>
+#include <nxui/nxuistd.h>
 #include <nxui/sonictextscrollbar.h>
 #include <nxui/SonicUI.h>
 #include <nxui/ConstDefine.h>

@@ -1,4 +1,4 @@
-#include <nxui/StdAfx.h>
+#include <nxui/nxuistd.h>
 #include <nxui/sonicpaint.h>
 
 CSonicPaint::CSonicPaint(void)

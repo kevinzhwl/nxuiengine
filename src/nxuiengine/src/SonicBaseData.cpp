@@ -1,4 +1,4 @@
-#include <nxui/StdAfx.h>
+#include <nxui/nxuistd.h>
 #include <nxui/isonicbasedata.h>
 #include <nxui/ConstDefine.h>
 #include <nxui/SonicUI.h>

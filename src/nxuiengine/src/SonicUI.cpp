@@ -1,7 +1,7 @@
 // SonicUI.cpp : 定义 DLL 应用程序的入口点。
 //
 
-#include <nxui/stdafx.h>
+#include <nxui/nxuistd.h>
 #include <nxui/SonicUI.h>
 #include <nxui/SonicImage.h>
 #include <nxui/SonicWndEffect.h>

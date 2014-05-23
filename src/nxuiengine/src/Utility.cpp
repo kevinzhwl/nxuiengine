@@ -1,4 +1,4 @@
-#include <nxui/stdafx.h>
+#include <nxui/nxuistd.h>
 #include <nxui/ConstDefine.h>
 #include <Tlhelp32.h>
 

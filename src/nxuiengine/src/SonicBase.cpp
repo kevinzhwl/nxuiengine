@@ -1,6 +1,6 @@
 #pragma once
 
-#include <nxui/stdafx.h>
+#include <nxui/nxuistd.h>
 #include <ISonicUI.h>
 #include <nxui/ISonicBaseData.h>
 using namespace sonic_ui;

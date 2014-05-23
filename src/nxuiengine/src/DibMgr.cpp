@@ -1,4 +1,4 @@
-#include <nxui/StdAfx.h>
+#include <nxui/nxuistd.h>
 #include <nxui/dibmgr.h>
 #include <nxui/SSE.h>
 

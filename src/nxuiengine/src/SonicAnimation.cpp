@@ -1,5 +1,5 @@
-#include <nxui/StdAfx.h>
-#include <nxui/.\sonicanimation.h>
+#include <nxui/nxuistd.h>
+#include <nxui/sonicanimation.h>
 #include <nxui/ConstDefine.h>
 #include <math.h>
 #include <nxui/SonicImage.h>

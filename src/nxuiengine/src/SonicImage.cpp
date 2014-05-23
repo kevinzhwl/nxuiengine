@@ -1,4 +1,4 @@
-#include <nxui/StdAfx.h>
+#include <nxui/nxuistd.h>
 #include <nxui/sonicimage.h>
 #include <addon/include/ximage.h>
 #include <nxui/ConstDefine.h>

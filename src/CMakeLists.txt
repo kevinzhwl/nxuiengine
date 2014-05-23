@@ -1,13 +1,13 @@
 ### ---[ global CMake
 cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 
-project(bxui)
+project(nxui)
 string(TOLOWER ${PROJECT_NAME} LOWER_PROJECT_NAME)
 
 include(${CMAKE_SOURCE_DIR}/cmake/prj_build_config.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/pcl_utils.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/pcl_targets.cmake)
-#include(${CMAKE_SOURCE_DIR}/cmake/duix_utils.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake/prj_utils.cmake)
 
 # In case the user does not setup CMAKE_BUILD_TYPE, assume it's RelWithDebInfo
 if("${CMAKE_BUILD_TYPE}" STREQUAL "")
