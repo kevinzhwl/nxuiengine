@@ -27,11 +27,13 @@ if(build)
 
     file( GLOB_RECURSE HEADER_INCS "*.h" "*.hpp" "*.tlh" "*.tli")
 
-    file( GLOB_RECURSE ENGINE_INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/sonicui/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/src/*.hpp")
-    file( GLOB PUGIXML_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/addons/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/addons/*.hpp")
+    file( GLOB_RECURSE ENGINE_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
 
     file( GLOB_RECURSE ENGINE_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" )
-    file( GLOB PUGIXML_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.cpp" )
+
+    file( GLOB PUGIXML_INCS "${CMAKE_CURRENT_SOURCE_DIR}/addon/include/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/addon/include/*.hpp")
+    file( GLOB PUGIXML_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/addon/src/*.cpp" )
+    file( GLOB PUGIXML_LIBS "${CMAKE_CURRENT_SOURCE_DIR}/addon/lib/*.lib" )
 
     set(CPP_SRCS
     ${ENGINE_SRCS}
@@ -52,8 +54,7 @@ if(build)
     )
 
     set(ALL_LIBRARIES
-        #shlwapi.lib
-        #Msimg32.lib
+        ${PUGIXML_LIBS}
         )
 
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)

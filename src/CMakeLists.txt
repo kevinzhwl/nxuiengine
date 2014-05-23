@@ -4,6 +4,7 @@ cmake_minimum_required(VERSION 2.8 FATAL_ERROR)
 project(bxui)
 string(TOLOWER ${PROJECT_NAME} LOWER_PROJECT_NAME)
 
+include(${CMAKE_SOURCE_DIR}/cmake/prj_build_config.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/pcl_utils.cmake)
 include(${CMAKE_SOURCE_DIR}/cmake/pcl_targets.cmake)
 #include(${CMAKE_SOURCE_DIR}/cmake/duix_utils.cmake)
