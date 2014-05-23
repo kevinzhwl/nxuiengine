@@ -27,16 +27,11 @@ if(build)
 
     file( GLOB_RECURSE HEADER_INCS "*.h" "*.hpp" "*.tlh" "*.tli")
 
-    file( GLOB_RECURSE ENGINE_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/sonicui/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/sonicui/*.hpp")
-    file( GLOB_RECURSE ENGINE_EXTRA_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/sonicui/*.tlh" "${CMAKE_CURRENT_SOURCE_DIR}/include/sonicui/*.tli")
+    file( GLOB_RECURSE ENGINE_INCS "${CMAKE_CURRENT_SOURCE_DIR}/src/sonicui/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/src/*.hpp")
     file( GLOB PUGIXML_INCS "${CMAKE_CURRENT_SOURCE_DIR}/include/addons/*.h" "${CMAKE_CURRENT_SOURCE_DIR}/include/addons/*.hpp")
 
     file( GLOB_RECURSE ENGINE_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" )
     file( GLOB PUGIXML_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/include/*.cpp" )
-
-    set(MFC_APP_SRCS
-    "src/dllmain.cpp"
-    )
 
     set(CPP_SRCS
     ${ENGINE_SRCS}
@@ -86,52 +81,10 @@ if(build)
 
     endif(BUILD_duixengine_shared)
 
-foreach(hdfile ${HEADER_INCS})
-    get_filename_component (absolute ${hdfile} ABSOLUTE)
-    get_filename_component (name ${hdfile} NAME)
-    STRING(REGEX REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/include" "${DUIX_OUTPUT_INCLUDE_DIR}" dir ${absolute})
-    configure_file(${hdfile} ${dir} COPYONLY)
-endforeach(hdfile)
+
 
 #/////////////////////////////////////////////////////////////////
 # installation setting
-
-        # set CMAKE Installation Options
-
-        set(DUIX_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}")
-
-        #set the default path for built executables to the "bin" directory
-        set(DUIX_INSTALL_EXEC_DIR ${DUIX_INSTALL_DIR}/bin)
-        #set the default path for built libraries(shared) to the "lib" directory
-        set(DUIX_INSTALL_LIB_DIR ${DUIX_INSTALL_DIR}/lib)
-        #set the default path for built libraries(static)
-        set(DUIX_INSTALL_ARCH_DIR ${DUIX_INSTALL_DIR}/lib)
-
-        IF(BUILD_duixengine_static)
-        install (
-            TARGETS "${DUIX_TRAGET_STATIC_NAME}"
-            RUNTIME DESTINATION ${DUIX_INSTALL_EXEC_DIR}
-            LIBRARY DESTINATION ${DUIX_INSTALL_LIB_DIR}
-            ARCHIVE DESTINATION ${DUIX_INSTALL_ARCH_DIR}
-        )
-        ENDIF(BUILD_duixengine_static)
-
-        IF(BUILD_duixengine_shared)
-        install (
-            TARGETS "${DUIX_TRAGET_SHARED_NAME}"
-            RUNTIME DESTINATION ${DUIX_INSTALL_EXEC_DIR}
-            LIBRARY DESTINATION ${DUIX_INSTALL_LIB_DIR}
-            ARCHIVE DESTINATION ${DUIX_INSTALL_ARCH_DIR}
-        )
-        ENDIF(BUILD_duixengine_shared)
-
-
-
-        install (
-            DIRECTORY include
-            DESTINATION ${DUIX_INSTALL_DIR}
-            FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.tli" PATTERN "*.tlh"
-        )
 
 
 endif(build)
