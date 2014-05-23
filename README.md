@@ -1,6 +1,6 @@
-BxuiEngine
+NxuiEngine
 ========
-BxuiEngine是一个简单的界面引擎。
+NxuiEngine是一个简单的界面引擎。
 	
 更新日志
 ----------
