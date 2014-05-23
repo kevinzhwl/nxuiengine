@@ -1,8 +1,8 @@
 #pragma once
-#include "ISonicUI.h"
+#include <ISonicUI.h>
 using namespace sonic_ui;
-#include "ISonicBaseData.h"
-#include "DibMgr.h"
+#include <nxui/ISonicBaseData.h>
+#include <nxui/DibMgr.h>
 
 #define TIMER_SCROLL_TEXT	0x1
 #define TIMER_PAUSE			0x2

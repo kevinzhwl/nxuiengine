@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include ".\gifhandler.h"
+#include <nxui/StdAfx.h>
+#include <nxui/gifhandler.h>
 
 
 inline int TGIFControlExt::GetPackedValue(enum ControlExtValues Value)
@@ -126,9 +126,9 @@ int CGifHandler::LoadGif(HGLOBAL hGlobal, DWORD dwSize)
 			__leave;
 		};
 		TGIFHeader * pGifHeader = (TGIFHeader *)(pRawData);
-		if ((memcmp(&pGifHeader->cSignature,"GIF",3) != 0) &&
-			((memcmp(&pGifHeader->cVersion,"87a",3) != 0) ||
-			(memcmp(&pGifHeader->cVersion,"89a",3) != 0)) )
+        if ((memcmp(&pGifHeader->cSignature,"GIF",3) != 0) &&
+            ((memcmp(&pGifHeader->cVersion,"87a",3) != 0) ||
+            (memcmp(&pGifHeader->cVersion,"89a",3) != 0)) )
 		{
 			bRet = 0;
 			GlobalUnlock(hGlobal);

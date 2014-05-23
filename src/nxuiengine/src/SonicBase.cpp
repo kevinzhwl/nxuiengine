@@ -1,8 +1,8 @@
 #pragma once
 
-#include "stdafx.h"
-#include "ISonicUI.h"
-#include "ISonicBaseData.h"
+#include <nxui/stdafx.h>
+#include <ISonicUI.h>
+#include <nxui/ISonicBaseData.h>
 using namespace sonic_ui;
 
 ISonicBase::ISonicBase()

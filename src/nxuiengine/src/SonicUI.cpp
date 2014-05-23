@@ -1,17 +1,17 @@
 // SonicUI.cpp : 定义 DLL 应用程序的入口点。
 //
 
-#include "stdafx.h"
-#include "SonicUI.h"
-#include "SonicImage.h"
-#include "SonicWndEffect.h"
-#include "ConstDefine.h"
-#include "SonicString.h"
-#include "SonicTextScrollBar.h"
-#include "InjectTool.h"
-#include "SonicPaint.h"
-#include "SonicAnimation.h"
-#include "SonicSkin.h"
+#include <nxui/stdafx.h>
+#include <nxui/SonicUI.h>
+#include <nxui/SonicImage.h>
+#include <nxui/SonicWndEffect.h>
+#include <nxui/ConstDefine.h>
+#include <nxui/SonicString.h>
+#include <nxui/SonicTextScrollBar.h>
+#include <addon/include/InjectTool.h>
+#include <nxui/SonicPaint.h>
+#include <nxui/SonicAnimation.h>
+#include <nxui/SonicSkin.h>
 
 
 // #ifdef _DEBUG
@@ -21,7 +21,7 @@
 // #pragma comment(lib, "zlibD.lib")
 // #pragma comment(lib, "InjectToolD.lib")
 // #else
-#ifdef TRUE
+#ifdef XTRUE
 #pragma comment(lib, "cximage.lib")
 #pragma comment(lib, "jpeg.lib")
 #pragma comment(lib, "png.lib")

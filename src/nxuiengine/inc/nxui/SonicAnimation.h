@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SonicPaint.h"
+#include <nxui/SonicPaint.h>
 
 class CSonicAnimation : public ISonicAnimation, public ISonicBaseData
 {

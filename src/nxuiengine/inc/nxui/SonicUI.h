@@ -1,9 +1,9 @@
 #pragma once
 
-#include "ISonicUI.h"
+#include <ISonicUI.h>
 using namespace sonic_ui;
-#include "SimpleToolTip.h"
-#include "ISonicBaseData.h"
+#include <nxui/SimpleToolTip.h>
+#include <nxui/ISonicBaseData.h>
 
 // wParam:CSonicString *
 // HIWORD(lParam):EVENT

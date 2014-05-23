@@ -1,9 +1,9 @@
-#include "StdAfx.h"
-#include ".\sonicstring.h"
-#include "SonicUI.h"
-#include "ConstDefine.h"
-#include "SSE.h"
-#include "shellapi.h"
+#include <nxui/StdAfx.h>
+#include <nxui/sonicstring.h>
+#include <nxui/SonicUI.h>
+#include <nxui/ConstDefine.h>
+#include <nxui/SSE.h>
+#include <shellapi.h>
 
 HFONT CSonicString::m_hFont = NULL;
 CSonicString::MAP_STR_TO_FUNC CSonicString::m_mapFunc;

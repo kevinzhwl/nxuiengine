@@ -1,6 +1,6 @@
-#include "StdAfx.h"
-#include ".\sse.h"
-#include "ConstDefine.h"
+#include <nxui/StdAfx.h>
+#include <nxui/sse.h>
+#include <nxui/ConstDefine.h>
 
 int CSSE::m_nSupportSSE = -1;
 

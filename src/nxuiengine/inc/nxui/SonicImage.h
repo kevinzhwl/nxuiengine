@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ISonicUI.h"
-#include "GifHandler.h"
+#include <ISonicUI.h>
+#include <nxui/GifHandler.h>
 using namespace sonic_ui;
-#include "DibMgr.h"
-#include "ISonicBaseData.h"
+#include <nxui/DibMgr.h>
+#include <nxui/ISonicBaseData.h>
 
 class CSonicImage : public ISonicImage
 {

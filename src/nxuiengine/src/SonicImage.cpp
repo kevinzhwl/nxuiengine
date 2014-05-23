@@ -1,11 +1,11 @@
-#include "StdAfx.h"
-#include ".\sonicimage.h"
-#include "ximage.h"
-#include "ConstDefine.h"
-#include "SSE.h"
-#include "SonicUI.h"
-#include "shlobj.h"
-#include "shlwapi.h"
+#include <nxui/StdAfx.h>
+#include <nxui/sonicimage.h>
+#include <addon/include/ximage.h>
+#include <nxui/ConstDefine.h>
+#include <nxui/SSE.h>
+#include <nxui/SonicUI.h>
+#include <shlobj.h>
+#include <shlwapi.h>
 
 int Trigonometry[361][2];
 #define SIN(x) Trigonometry[(x)][0]

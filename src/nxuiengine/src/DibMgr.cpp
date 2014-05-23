@@ -1,6 +1,6 @@
-#include "StdAfx.h"
-#include ".\dibmgr.h"
-#include "SSE.h"
+#include <nxui/StdAfx.h>
+#include <nxui/dibmgr.h>
+#include <nxui/SSE.h>
 
 CDibMgr::CDibMgr(void)
 {

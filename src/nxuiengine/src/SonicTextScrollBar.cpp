@@ -1,7 +1,7 @@
-#include "StdAfx.h"
-#include ".\sonictextscrollbar.h"
-#include "SonicUI.h"
-#include "ConstDefine.h"
+#include <nxui/StdAfx.h>
+#include <nxui/sonictextscrollbar.h>
+#include <nxui/SonicUI.h>
+#include <nxui/ConstDefine.h>
 
 CSonicTextScrollBar::CSonicTextScrollBar(void)
 {

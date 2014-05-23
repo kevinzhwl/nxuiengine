@@ -1,5 +1,5 @@
-#include "StdAfx.h"
-#include ".\sonicpaint.h"
+#include <nxui/StdAfx.h>
+#include <nxui/sonicpaint.h>
 
 CSonicPaint::CSonicPaint(void)
 {

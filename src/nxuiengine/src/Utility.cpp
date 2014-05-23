@@ -1,6 +1,6 @@
-#include "stdafx.h"
-#include "ConstDefine.h"
-#include "Tlhelp32.h"
+#include <nxui/stdafx.h>
+#include <nxui/ConstDefine.h>
+#include <Tlhelp32.h>
 
 
 DWORD GetMainThreadId()

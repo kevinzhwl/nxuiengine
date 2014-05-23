@@ -1,11 +1,11 @@
-#include "StdAfx.h"
-#include ".\sonicwndeffect.h"
-#include "ConstDefine.h"
-#include "math.h"
-#include "mmsystem.h"
-#include "SonicUI.h"
-#include "SSE.h"
-#include "SonicImage.h"
+#include <nxui/StdAfx.h>
+#include <nxui/sonicwndeffect.h>
+#include <nxui/ConstDefine.h>
+#include <math.h>
+#include <mmsystem.h>
+#include <nxui/SonicUI.h>
+#include <nxui/SSE.h>
+#include <nxui/SonicImage.h>
 
 void CSonicWndEffect::FRAME_PARAM::Clear()
 {

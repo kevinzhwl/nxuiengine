@@ -1,8 +1,8 @@
-#include "StdAfx.h"
-#include "SonicUI.h"
-#include ".\sonicskin.h"
-#include "DibMgr.h"
-#include "ConstDefine.h"
+#include <nxui/StdAfx.h>
+#include <nxui/SonicUI.h>
+#include <nxui/sonicskin.h>
+#include <nxui/DibMgr.h>
+#include <nxui/ConstDefine.h>
 
 CSonicSkin::MAP_NAME_TO_CTRL CSonicSkin::m_mapName;
 CSonicSkin::MAP_VALUE_TO_CTRL CSonicSkin::m_mapValue;

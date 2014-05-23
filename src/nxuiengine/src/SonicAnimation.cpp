@@ -1,8 +1,8 @@
-#include "StdAfx.h"
-#include ".\sonicanimation.h"
-#include "ConstDefine.h"
-#include "math.h"
-#include "SonicImage.h"
+#include <nxui/StdAfx.h>
+#include <nxui/.\sonicanimation.h>
+#include <nxui/ConstDefine.h>
+#include <math.h>
+#include <nxui/SonicImage.h>
 
 #define TIMER_SHOWING_GENTLY	0x1
 #define TIMER_MOVE_GENTLY		0x2

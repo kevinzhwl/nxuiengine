@@ -1,8 +1,8 @@
 #pragma once
 
-#include "ISonicUI.h"
+#include <ISonicUI.h>
 using namespace sonic_ui;
-#include "ISonicBaseData.h"
+#include <nxui/ISonicBaseData.h>
 
 class CSonicSkin : public ISonicSkin, public ISonicBaseData
 {

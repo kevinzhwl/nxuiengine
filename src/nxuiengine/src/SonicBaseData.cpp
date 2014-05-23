@@ -1,7 +1,7 @@
-#include "StdAfx.h"
-#include ".\isonicbasedata.h"
-#include "ConstDefine.h"
-#include "SonicUI.h"
+#include <nxui/StdAfx.h>
+#include <nxui/isonicbasedata.h>
+#include <nxui/ConstDefine.h>
+#include <nxui/SonicUI.h>
 
 LIST_BASE_DATA ISonicBaseData::m_TimerList;
 

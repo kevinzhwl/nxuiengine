@@ -1,10 +1,10 @@
 #pragma once
 
-#include "ISonicUI.h"
+#include <ISonicUI.h>
 using namespace sonic_ui;
 
-#include "DibMgr.h"
-#include "ISonicBaseData.h"
+#include <nxui/DibMgr.h>
+#include <nxui/ISonicBaseData.h>
 
 #define DEFAULT_ALPHA_STEP		35
 #define DEFAULT_MOVE_FRAME		28
