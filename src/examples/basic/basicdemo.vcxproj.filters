@@ -58,10 +58,10 @@
     <None Include="Res\normal.bmp">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="small.ico">
+    <None Include="res\small.ico">
       <Filter>资源文件</Filter>
     </None>
-    <None Include="SonicUIDemo.ico">
+    <None Include="res\basicDemo.ico">
       <Filter>资源文件</Filter>
     </None>
     <None Include="Res\bg.png" />
@@ -71,7 +71,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="SonicUIDemo.rc">
+    <ResourceCompile Include="basicdemo.rc">
       <Filter>资源文件</Filter>
     </ResourceCompile>
   </ItemGroup>

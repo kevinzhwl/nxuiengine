@@ -8,7 +8,7 @@ if(BUILD_examples)
 
     file(GLOB_RECURSE APP_SRCS "*.cpp")
     file(GLOB_RECURSE APP_INCS "*.h")
-    file(GLOB APP_RES "res/*.*" "sonicuidemo.rc" "small.ico" "sonicuidemo.ico")
+    file(GLOB APP_RES "res/*.*" "basicdemo.rc")
 
     set(ALL_SOURCES
         ${APP_SRCS} ${APP_INCS} ${APP_SKINS} ${APP_RES} ${RC_FILE})

@@ -114,8 +114,8 @@
     <None Include="Res\click.bmp" />
     <None Include="Res\hover.bmp" />
     <None Include="Res\normal.bmp" />
-    <None Include="small.ico" />
-    <None Include="SonicUIDemo.ico" />
+    <None Include="res\small.ico" />
+    <None Include="res\SonicUIDemo.ico" />
     <None Include="Res\bg.png" />
     <None Include="Res\Button_01.png" />
     <None Include="Res\close.png" />
@@ -123,7 +123,7 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="SonicUIDemo.rc" />
+    <ResourceCompile Include="basicdemo.rc" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\nxuiengine\nxuiengine.vcxproj">
