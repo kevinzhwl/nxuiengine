@@ -21,7 +21,7 @@
 // #pragma comment(lib, "zlibD.lib")
 // #pragma comment(lib, "InjectToolD.lib")
 // #else
-#ifdef XTRUE
+#ifdef TRUE
 #pragma comment(lib, "cximage.lib")
 #pragma comment(lib, "jpeg.lib")
 #pragma comment(lib, "png.lib")

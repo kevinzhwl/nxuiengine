@@ -1,6 +1,6 @@
 
-set(SUBSYS_NAME bxuiengine)
-set(SUBSYS_DESC "bxuiengine")
+set(SUBSYS_NAME nxuiengine)
+set(SUBSYS_DESC "nxuiengine")
 #set(SUBSYS_DEPS )
 
 set(DEFAULT TRUE)
@@ -11,25 +11,11 @@ PCL_SUBSYS_DEPEND(build ${SUBSYS_NAME} DEPS ${SUBSYS_DEPS})
 if(build)
 
     set(ENGINE_TARGET_NAME "${SUBSYS_NAME}")
-
     set(DUIX_TARGET_PLATFORM "Win32")
 
     add_prj_definitions()
 
-    set(CompilerFlags
-            CMAKE_CXX_FLAGS
-            CMAKE_CXX_FLAGS_DEBUG
-            CMAKE_CXX_FLAGS_RELEASE
-            CMAKE_C_FLAGS
-            CMAKE_C_FLAGS_DEBUG
-            CMAKE_C_FLAGS_RELEASE
-            )
-    foreach(CompilerFlag ${CompilerFlags})
-      string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
-    endforeach()
-
     #set the C/C++ include path to the "include" directory
-    #include_directories("${PROJECT_SOURCE_DIR}/include")
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/inc)
     link_directories(${CMAKE_CURRENT_SOURCE_DIR}/addon/lib)
@@ -73,7 +59,7 @@ if(build)
     if(BUILD_duixengine_static)
         set(DUIX_TRAGET_STATIC_NAME "${ENGINE_TARGET_NAME}-${DUIX_TARGET_PLATFORM}-${CMAKE_BUILD_TYPE}-static")
         add_library("${DUIX_TRAGET_STATIC_NAME}" STATIC ${ALL_SOURCES} )
-        #target_link_libraries("${DUIX_TRAGET_STATIC_NAME}" ${ALL_LIBRARIES})
+        target_link_libraries("${DUIX_TRAGET_STATIC_NAME}" ${ALL_LIBRARIES})
     endif(BUILD_duixengine_static)
 
     if(BUILD_duixengine_shared)
@@ -86,6 +72,21 @@ if(build)
 
     endif(BUILD_duixengine_shared)
 
+
+foreach(hdfile ${ENGINE_PUBLIC_INCS})
+    get_filename_component (absolute ${hdfile} ABSOLUTE)
+    get_filename_component (name ${hdfile} NAME)
+    STRING(REGEX REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/inc" "${CMAKE_BINARY_DIR}/include" dir ${absolute})
+    configure_file(${hdfile} ${dir} COPYONLY)
+endforeach(hdfile)
+
+set(XPUGIXML_LIBS "${CMAKE_CURRENT_SOURCE_DIR}/addon/lib/cximage.lib")
+foreach(hdfile ${XPUGIXML_LIBS})
+    get_filename_component (absolute ${hdfile} ABSOLUTE)
+    get_filename_component (name ${hdfile} NAME)
+    STRING(REGEX REPLACE "${CMAKE_CURRENT_SOURCE_DIR}/addon/lib" "${CMAKE_BINARY_DIR}/lib" dir ${absolute})
+    configure_file(${hdfile} ${dir} COPYONLY)
+endforeach(hdfile)
 #/////////////////////////////////////////////////////////////////
 # installation setting
 

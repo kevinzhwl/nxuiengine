@@ -15,102 +15,102 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DibMgr.cpp">
+    <ClCompile Include="src\DibMgr.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="GifHandler.cpp">
+    <ClCompile Include="src\GifHandler.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SimpleToolTip.cpp">
+    <ClCompile Include="src\SimpleToolTip.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicAnimation.cpp">
+    <ClCompile Include="src\SonicAnimation.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicBase.cpp">
+    <ClCompile Include="src\SonicBase.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicBaseData.cpp">
+    <ClCompile Include="src\SonicBaseData.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicImage.cpp">
+    <ClCompile Include="src\SonicImage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicPaint.cpp">
+    <ClCompile Include="src\SonicPaint.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicSkin.cpp">
+    <ClCompile Include="src\SonicSkin.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicString.cpp">
+    <ClCompile Include="src\SonicString.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicTextScrollBar.cpp">
+    <ClCompile Include="src\SonicTextScrollBar.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicUI.cpp">
+    <ClCompile Include="src\SonicUI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SonicWndEffect.cpp">
+    <ClCompile Include="src\SonicWndEffect.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="SSE.cpp">
+    <ClCompile Include="src\SSE.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="src\Utility.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Utility.cpp">
+    <ClCompile Include="src\nxuistd.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ConstDefine.h">
+    <ClInclude Include="inc\nxui\ConstDefine.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="DibMgr.h">
+    <ClInclude Include="inc\nxui\DibMgr.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="GifHandler.h">
+    <ClInclude Include="inc\nxui\GifHandler.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="ISonicBaseData.h">
+    <ClInclude Include="inc\nxui\ISonicBaseData.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\ISonicUI.h">
+    <ClInclude Include="inc\ISonicUI.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SimpleToolTip.h">
+    <ClInclude Include="inc\nxui\SimpleToolTip.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SonicAnimation.h">
+    <ClInclude Include="inc\nxui\SonicAnimation.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SonicImage.h">
+    <ClInclude Include="inc\nxui\SonicImage.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SonicPaint.h">
+    <ClInclude Include="inc\nxui\SonicPaint.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SonicSkin.h">
+    <ClInclude Include="inc\nxui\SonicSkin.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SonicString.h">
+    <ClInclude Include="inc\nxui\SonicString.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SonicTextScrollBar.h">
+    <ClInclude Include="inc\nxui\SonicTextScrollBar.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SonicUI.h">
+    <ClInclude Include="inc\nxui\SonicUI.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SonicWndEffect.h">
+    <ClInclude Include="inc\nxui\SonicWndEffect.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="SSE.h">
+    <ClInclude Include="inc\nxui\SSE.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="stdafx.h">
+    <ClInclude Include="inc\nxui\nxuistd.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

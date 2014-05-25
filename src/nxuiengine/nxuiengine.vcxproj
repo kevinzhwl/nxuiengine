@@ -22,10 +22,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lib|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -51,7 +53,6 @@
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release_Lib|Win32'">$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release_Lib|Win32'">$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
@@ -63,38 +64,35 @@
     <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release_Lib|Win32'">$(ProjectName)-$(Configuration)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectName)-$(Configuration)</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)-$(Configuration)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include; ./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./inc;./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;SONICUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
-      <PrecompiledHeader>
-      </PrecompiledHeader>
+      <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PrecompiledHeaderFile>nxui\nxuistd.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <OutputFile>../bin/SonicUI.dll</OutputFile>
-      <AdditionalLibraryDirectories>../lib;./lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./addon/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>$(OutDir)SonicUI.pdb</ProgramDatabaseFile>
       <SubSystem>Windows</SubSystem>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <ImportLibrary>../lib/SonicUI.lib</ImportLibrary>
-      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include;./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./inc;./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SONICUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -102,27 +100,20 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>nxui\nxuistd.h</PrecompiledHeaderFile>
     </ClCompile>
     <Link>
-      <OutputFile>../bin/SonicUI.dll</OutputFile>
-      <AdditionalLibraryDirectories>../lib;./lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>./addon/lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
-      <ImportLibrary>../lib/SonicUI.lib</ImportLibrary>
-      <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_Lib|Win32'">
     <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>../include;./include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>./inc;./;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;SONICUI_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -130,51 +121,49 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <PrecompiledHeaderFile>nxui\nxuistd.h</PrecompiledHeaderFile>
     </ClCompile>
-    <Lib>
-      <OutputFile>../lib/$(ProjectName).lib</OutputFile>
-      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-    </Lib>
+    <Lib />
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="DibMgr.cpp" />
-    <ClCompile Include="GifHandler.cpp" />
-    <ClCompile Include="SimpleToolTip.cpp" />
-    <ClCompile Include="SonicAnimation.cpp" />
-    <ClCompile Include="SonicBase.cpp" />
-    <ClCompile Include="SonicBaseData.cpp" />
-    <ClCompile Include="SonicImage.cpp" />
-    <ClCompile Include="SonicPaint.cpp" />
-    <ClCompile Include="SonicSkin.cpp" />
-    <ClCompile Include="SonicString.cpp" />
-    <ClCompile Include="SonicTextScrollBar.cpp" />
-    <ClCompile Include="SonicUI.cpp" />
-    <ClCompile Include="SonicWndEffect.cpp" />
-    <ClCompile Include="SSE.cpp" />
-    <ClCompile Include="stdafx.cpp">
+    <ClCompile Include="src\DibMgr.cpp" />
+    <ClCompile Include="src\GifHandler.cpp" />
+    <ClCompile Include="src\SimpleToolTip.cpp" />
+    <ClCompile Include="src\SonicAnimation.cpp" />
+    <ClCompile Include="src\SonicBase.cpp" />
+    <ClCompile Include="src\SonicBaseData.cpp" />
+    <ClCompile Include="src\SonicImage.cpp" />
+    <ClCompile Include="src\SonicPaint.cpp" />
+    <ClCompile Include="src\SonicSkin.cpp" />
+    <ClCompile Include="src\SonicString.cpp" />
+    <ClCompile Include="src\SonicTextScrollBar.cpp" />
+    <ClCompile Include="src\SonicUI.cpp" />
+    <ClCompile Include="src\SonicWndEffect.cpp" />
+    <ClCompile Include="src\SSE.cpp" />
+    <ClCompile Include="src\nxuistd.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release_Lib|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Utility.cpp" />
+    <ClCompile Include="src\Utility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ConstDefine.h" />
-    <ClInclude Include="DibMgr.h" />
-    <ClInclude Include="GifHandler.h" />
-    <ClInclude Include="ISonicBaseData.h" />
-    <ClInclude Include="..\include\ISonicUI.h" />
-    <ClInclude Include="SimpleToolTip.h" />
-    <ClInclude Include="SonicAnimation.h" />
-    <ClInclude Include="SonicImage.h" />
-    <ClInclude Include="SonicPaint.h" />
-    <ClInclude Include="SonicSkin.h" />
-    <ClInclude Include="SonicString.h" />
-    <ClInclude Include="SonicTextScrollBar.h" />
-    <ClInclude Include="SonicUI.h" />
-    <ClInclude Include="SonicWndEffect.h" />
-    <ClInclude Include="SSE.h" />
-    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="inc\nxui\ConstDefine.h" />
+    <ClInclude Include="inc\nxui\DibMgr.h" />
+    <ClInclude Include="inc\nxui\GifHandler.h" />
+    <ClInclude Include="inc\nxui\ISonicBaseData.h" />
+    <ClInclude Include="inc\ISonicUI.h" />
+    <ClInclude Include="inc\nxui\SimpleToolTip.h" />
+    <ClInclude Include="inc\nxui\SonicAnimation.h" />
+    <ClInclude Include="inc\nxui\SonicImage.h" />
+    <ClInclude Include="inc\nxui\SonicPaint.h" />
+    <ClInclude Include="inc\nxui\SonicSkin.h" />
+    <ClInclude Include="inc\nxui\SonicString.h" />
+    <ClInclude Include="inc\nxui\SonicTextScrollBar.h" />
+    <ClInclude Include="inc\nxui\SonicUI.h" />
+    <ClInclude Include="inc\nxui\SonicWndEffect.h" />
+    <ClInclude Include="inc\nxui\SSE.h" />
+    <ClInclude Include="inc\nxui\nxuistd.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
