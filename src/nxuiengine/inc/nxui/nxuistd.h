@@ -15,6 +15,12 @@
 #include <afxwin.h>
 */
 
+#if defined(_DEBUG)
+#define _DEBUG_WAS_DEFINED
+#undef _DEBUG
+#pragma message ("Compiling MFC header files in release mode.")
+#endif
+
 #define WIN32_LEAN_AND_MEAN		// 从 Windows 头中排除极少使用的资料
 // Windows 头文件:
 #include <windows.h>
@@ -22,6 +28,10 @@
 #include <atlstr.h>
 #include <atltypes.h>
 
+#if defined(_DEBUG_WAS_DEFINED)
+#define _DEBUG
+#undef _DEBUG_WAS_DEFINED
+#endif
 
 // TODO: 在此处引用程序要求的附加头文件
 //#include "tool.h"

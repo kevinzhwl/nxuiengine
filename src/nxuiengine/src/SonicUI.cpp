@@ -8,10 +8,10 @@
 #include <nxui/ConstDefine.h>
 #include <nxui/SonicString.h>
 #include <nxui/SonicTextScrollBar.h>
-#include <addon/include/InjectTool.h>
 #include <nxui/SonicPaint.h>
 #include <nxui/SonicAnimation.h>
 #include <nxui/SonicSkin.h>
+#include <addon/include/InjectTool.h>
 
 
 // #ifdef _DEBUG

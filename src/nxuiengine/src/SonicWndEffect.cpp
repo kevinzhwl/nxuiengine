@@ -1,11 +1,11 @@
 #include <nxui/nxuistd.h>
 #include <nxui/sonicwndeffect.h>
 #include <nxui/ConstDefine.h>
-#include <math.h>
-#include <mmsystem.h>
 #include <nxui/SonicUI.h>
 #include <nxui/SSE.h>
 #include <nxui/SonicImage.h>
+#include <math.h>
+#include <mmsystem.h>
 
 void CSonicWndEffect::FRAME_PARAM::Clear()
 {

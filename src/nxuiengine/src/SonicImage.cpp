@@ -1,9 +1,9 @@
 #include <nxui/nxuistd.h>
 #include <nxui/sonicimage.h>
-#include <addon/include/ximage.h>
 #include <nxui/ConstDefine.h>
 #include <nxui/SSE.h>
 #include <nxui/SonicUI.h>
+#include <addon/include/ximage.h>
 #include <shlobj.h>
 #include <shlwapi.h>
 
